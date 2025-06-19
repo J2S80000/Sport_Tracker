@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "778828345523",
+    "project_id": "sportracker80",
+    "storage_bucket": "sportracker80.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:778828345523:android:b2d5b93cb10003c93b00c6",
+        "android_client_info": {
+          "package_name": "com.example.sport_tracker"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCqGpIwJptRhZlGV-v8_OM_gr383zYXRc8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
