@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'register_page.dart'; // Assurez-vous d'importer la page d'inscription
 
 class LoginPage extends StatefulWidget {
@@ -26,6 +27,25 @@ class _LoginPageState extends State<LoginPage> {
       });
     }
   }
+  Future<void> signInWithGoogle() async {
+  try {
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+    if (googleUser == null) return; // L'utilisateur a annulé
+
+    final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+
+    await FirebaseAuth.instance.signInWithCredential(credential);
+  } catch (e) {
+    setState(() {
+      errorMessage = 'Erreur Google : ${e.toString()}';
+    });
+  }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -48,6 +68,18 @@ class _LoginPageState extends State<LoginPage> {
             ElevatedButton(
               onPressed: signIn,
               child: const Text("Se connecter"),
+            ),
+            const SizedBox(height: 10),
+            ElevatedButton.icon(
+              icon: const Icon(Icons.login),
+              label: const Text("Connexion avec Google"),
+              onPressed: signInWithGoogle,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                foregroundColor: Colors.black,
+                shadowColor: Colors.grey,
+                elevation: 2,
+              ),
             ),
             TextButton(
               onPressed: () {

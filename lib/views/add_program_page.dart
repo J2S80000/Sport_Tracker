@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../controllers/program_controller.dart';
 import '../models/program.dart'; // nécessaire ici
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class AddProgramPage extends StatefulWidget {
   const AddProgramPage({super.key});
@@ -25,18 +27,30 @@ class _AddProgramPageState extends State<AddProgramPage> {
     });
   }
 
-  void _submitProgram() {
-    final program = Program(
-  nom: _programNameController.text,
-  jour: _selectedDay,
-  commentaire: _commentController.text,
-  exercices: _exercises.map((e) => e.toMap()).toList(),
-);
+void _submitProgram() async {
+  final program = Program(
+    nom: _programNameController.text,
+    jour: _selectedDay,
+    commentaire: _commentController.text,
+    exercices: _exercises.map((e) => e.toMap()).toList(),
+  );
 
-final controller = ProgramController();
-onPressed: () async {
-  await controller.saveProgram(program);
-};  }
+  final controller = ProgramController();
+
+  try {
+    await controller.saveProgram(program);
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('✅ Programme enregistré !')),
+    );
+
+    // Optionnel : revenir à la page d’accueil ou vider le formulaire
+    Navigator.pop(context); // ou autre redirection
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('❌ Erreur : ${e.toString()}')),
+    );
+  }
+}
 
   @override
   Widget build(BuildContext context) {
