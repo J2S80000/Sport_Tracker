@@ -8,6 +8,7 @@ environment:
   sdk: ^3.8.1
 
 dependencies:
+  fl_chart: ^0.64.0
   flutter:
     sdk: flutter
   google_sign_in: ^6.1.4
