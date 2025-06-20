@@ -14,7 +14,7 @@ class AddProgramPage extends StatefulWidget {
 class _AddProgramPageState extends State<AddProgramPage> {
   final _formKey = GlobalKey<FormState>();
   final List<ExerciseBlock> _exercises = [];
-  String _selectedDay = 'Lundi';
+DateTime _selectedDate = DateTime.now();
 
 
   final TextEditingController _programNameController = TextEditingController();
@@ -30,7 +30,7 @@ class _AddProgramPageState extends State<AddProgramPage> {
 void _submitProgram() async {
   final program = Program(
     nom: _programNameController.text,
-    jour: _selectedDay,
+    date: _selectedDate.toIso8601String(),
     commentaire: _commentController.text,
     exercices: _exercises.map((e) => e.toMap()).toList(),
   );
@@ -63,22 +63,24 @@ void _submitProgram() async {
           child: ListView(
             
             children: [
-              DropdownButtonFormField<String>(
-                value: _selectedDay,
-                decoration: const InputDecoration(labelText: "Jour du programme"),
-                items: [
-                  'Lundi',
-                  'Mardi',
-                  'Mercredi',
-                  'Jeudi',
-                  'Vendredi',
-                  'Samedi',
-                  'Dimanche',
-                ].map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
-                onChanged: (val) {
-                  setState(() {
-                    _selectedDay = val!;
-                  });
+              TextFormField(
+                readOnly: true,
+                decoration: const InputDecoration(labelText: "Date du programme"),
+                controller: TextEditingController(
+                  text: "${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}",
+                ),
+                onTap: () async {
+                  final DateTime? picked = await showDatePicker(
+                    context: context,
+                    initialDate: _selectedDate,
+                    firstDate: DateTime.now().subtract(const Duration(days: 365)),
+                    lastDate: DateTime.now().add(const Duration(days: 365)),
+                  );
+                  if (picked != null && picked != _selectedDate) {
+                    setState(() {
+                      _selectedDate = picked;
+                    });
+                  }
                 },
               ),
               TextFormField(
@@ -132,6 +134,7 @@ class ExerciseBlock {
   String intensity = 'Modérée';
   String restTime = '';
   String series = '';
+  bool accompli = false;
   Map<String, dynamic> toMap() {
     return {
       'type': type,
@@ -142,6 +145,7 @@ class ExerciseBlock {
       'series': series,
       'intensity': intensity,
       'restTime': restTime,
+      'accompli': accompli,
     };
   }
 
@@ -154,16 +158,7 @@ class ExerciseBlock {
     'Repos actif': [],
   };
 
-  final List<String> days = [
-    'Lundi',
-    'Mardi',
-    'Mercredi',
-    'Jeudi',
-    'Vendredi',
-    'Samedi',
-    'Dimanche',
-  ];
-
+ 
   final List<String> intensityOptions = [
     'Faible',
     'Modérée',
