@@ -25,6 +25,11 @@ class _CalendarPageState extends State<CaalendarPage> {
   /// 🔄 Normalise une date en supprimant l'heure
   DateTime normalizeDate(DateTime date) => DateTime(date.year, date.month, date.day);
 
+  /// Format une date pour Firestore (format YYYY-MM-DD)
+  String _formatDateForFirestore(DateTime date) {
+    return DateTime(date.year, date.month, date.day).toIso8601String().substring(0, 10);
+  }
+
   /// 📥 Charge les couleurs du calendrier selon l'avancement
   Future<void> loadProgramCompletionStatus() async {
     final user = FirebaseAuth.instance.currentUser;
@@ -41,19 +46,32 @@ class _CalendarPageState extends State<CaalendarPage> {
     for (var doc in snapshot.docs) {
       final data = doc.data();
       if (data['jour'] != null && data['exercices'] is List) {
-        final dateParsed = DateTime.parse(data['jour']).toLocal();
-        final date = normalizeDate(dateParsed);
-        final List exercices = data['exercices'];
+        try {
+          // 🔧 Parsing amélioré pour supporter les deux formats
+          DateTime dateParsed;
+          if (data['jour'].length == 10) {
+            // Format YYYY-MM-DD
+            dateParsed = DateTime.parse(data['jour']);
+          } else {
+            // Format ISO complet
+            dateParsed = DateTime.parse(data['jour']).toLocal();
+          }
+          
+          final date = normalizeDate(dateParsed);
+          final List exercices = data['exercices'];
 
-        int total = exercices.length;
-        int done = exercices.where((e) => e['accompli'] == true).length;
+          int total = exercices.length;
+          int done = exercices.where((e) => e['accompli'] == true).length;
 
-        if (total == 0 || done == 0) {
-          colors[date] = Colors.red;
-        } else if (done == total) {
-          colors[date] = Colors.green;
-        } else {
-          colors[date] = Colors.orange;
+          if (total == 0 || done == 0) {
+            colors[date] = Colors.red;
+          } else if (done == total) {
+            colors[date] = Colors.green;
+          } else {
+            colors[date] = Colors.orange;
+          }
+        } catch (e) {
+          print('Erreur de parsing de date: ${data['jour']} - $e');
         }
       }
     }
@@ -69,13 +87,14 @@ class _CalendarPageState extends State<CaalendarPage> {
     if (user == null) return;
 
     final normalized = normalizeDate(date);
+    final dateKey = _formatDateForFirestore(normalized);
 
+    // 🔧 Recherche directe par clé de date
     final snapshot = await FirebaseFirestore.instance
         .collection('users')
         .doc(user.uid)
         .collection('programmes')
-        .where('jour', isGreaterThanOrEqualTo: normalized.toIso8601String())
-        .where('jour', isLessThan: normalized.add(const Duration(days: 1)).toIso8601String())
+        .where('jour', isEqualTo: dateKey)
         .get();
 
     if (snapshot.docs.isNotEmpty) {
@@ -131,7 +150,7 @@ class _CalendarPageState extends State<CaalendarPage> {
               ),
             ),
             const SizedBox(height: 12),
-            // 🟢 Légende
+            // 🟢 Légende - 🔧 Correction de la syntaxe
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: const [
@@ -144,11 +163,11 @@ class _CalendarPageState extends State<CaalendarPage> {
             // 📋 Affichage du programme sélectionné
             if (_selectedDay != null)
               Text(
-                "Programme du ${_selectedDay!.toLocal().toString().split(" ")[0]}",
+                "Programme du ${_selectedDay!.day.toString().padLeft(2, '0')}/${_selectedDay!.month.toString().padLeft(2, '0')}/${_selectedDay!.year}",
                 style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
             const SizedBox(height: 8),
-            if (selectedProgram == null)
+            if (selectedProgram == null && _selectedDay != null)
               const Text("Aucun programme ce jour-là."),
             if (selectedProgram != null)
               Column(

@@ -25,15 +25,22 @@ class _AddProgramPageState extends State<AddProgramPage> {
     _checkExistingProgram();
   }
 
+  /// Normalise une date pour la comparaison (supprime l'heure)
+  String _formatDateForFirestore(DateTime date) {
+    return DateTime(date.year, date.month, date.day).toIso8601String().substring(0, 10);
+  }
+
   Future<void> _checkExistingProgram() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
+
+    final dateKey = _formatDateForFirestore(_selectedDate);
 
     final snapshot = await FirebaseFirestore.instance
         .collection('users')
         .doc(user.uid)
         .collection('programmes')
-        .where('jour', isEqualTo: DateTime(_selectedDate.year, _selectedDate.month, _selectedDate.day).toIso8601String())
+        .where('jour', isEqualTo: dateKey)
         .limit(1)
         .get();
 
@@ -67,30 +74,30 @@ class _AddProgramPageState extends State<AddProgramPage> {
       );
 
       if (confirmed != true) {
-    DateTime newDate = _selectedDate;
-    QuerySnapshot testSnapshot;
-    // Trouver la prochaine date libre
+        DateTime newDate = _selectedDate;
+        QuerySnapshot testSnapshot;
+        // Trouver la prochaine date libre
+        do {
+          newDate = newDate.add(const Duration(days: 1));
+          final newDateKey = _formatDateForFirestore(newDate);
+          testSnapshot = await FirebaseFirestore.instance
+              .collection('users')
+              .doc(FirebaseAuth.instance.currentUser!.uid)
+              .collection('programmes')
+              .where('jour', isEqualTo: newDateKey)
+              .get();
+        } while (testSnapshot.docs.isNotEmpty);
 
-    do {
-      newDate = newDate.add(const Duration(days: 1));
-      testSnapshot = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(FirebaseAuth.instance.currentUser!.uid)
-          .collection('programmes')
-          .where('jour', isEqualTo: DateTime(newDate.year, newDate.month, newDate.day).toIso8601String())
-          .get();
-    } while (testSnapshot.docs.isNotEmpty);
+        setState(() {
+          _selectedDate = newDate;
+        });
 
-    setState(() {
-      _selectedDate = newDate;
-    });
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text("Date automatiquement mise à jour au ${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}"),
-      ),
-    );
-    return; // Ne pas enregistrer, attendre nouvelle validation utilisateur
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Date automatiquement mise à jour au ${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}"),
+          ),
+        );
+        return; // Ne pas enregistrer, attendre nouvelle validation utilisateur
       }
     }
   }
@@ -104,7 +111,7 @@ class _AddProgramPageState extends State<AddProgramPage> {
   void _submitProgram() async {
     final program = Program(
       nom: _programNameController.text,
-      date: _selectedDate.toIso8601String(),
+      date: _formatDateForFirestore(_selectedDate), // 🔧 Format cohérent
       commentaire: _commentController.text,
       exercices: _exercises.map((e) => e.toMap()).toList(),
     );
@@ -119,7 +126,7 @@ class _AddProgramPageState extends State<AddProgramPage> {
       Navigator.pop(context);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('❌ Erreur : \${e.toString()}')),
+        SnackBar(content: Text('❌ Erreur : ${e.toString()}')),
       );
     }
   }
@@ -139,7 +146,6 @@ class _AddProgramPageState extends State<AddProgramPage> {
                 decoration: const InputDecoration(labelText: "Date du programme"),
                 controller: TextEditingController(
                   text: "${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}",
-
                 ),
                 onTap: () async {
                   final DateTime? picked = await showDatePicker(
@@ -286,7 +292,7 @@ class ExerciseBlock {
                   ),
                 if (type == 'Street Workout' && subType.isNotEmpty)
                   TextFormField(
-                    decoration: InputDecoration(labelText: "Nombre de répétitions pour \$subType"),
+                    decoration: InputDecoration(labelText: "Nombre de répétitions pour $subType"),
                     keyboardType: TextInputType.number,
                     onChanged: (val) => repetitions = val,
                   ),
