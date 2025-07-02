@@ -12,7 +12,7 @@
 	},
 	"vars": {
 	// ⚠️ ne mets pas ta clé en clair dans un dépôt public
-	"OPENROUTER_API_KEY": "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"
+	"OPENROUTER_API_KEY": "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"
   }
 	/**
 	 * Smart Placement
