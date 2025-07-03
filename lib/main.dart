@@ -2,7 +2,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:sport_tracker/firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:sport_tracker/views/add_program_page.dart';
 import 'package:sport_tracker/views/calendar_page.dart';
+
 
 import 'views/add_something_page.dart';
 import 'views/home_page.dart';
@@ -45,6 +47,13 @@ class _MainAppState extends State<MainApp> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(scaffoldBackgroundColor: Colors.white),
+      routes: {
+  '/edit-program': (context) {
+    final date = ModalRoute.of(context)!.settings.arguments as DateTime;
+    return AddProgramPage(initialDate: date); // à adapter selon ton constructeur
+  },
+},
+
       home: StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {

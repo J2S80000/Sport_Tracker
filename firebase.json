@@ -1,1 +1,43 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"sportracker80","appId":"1:778828345523:android:b2d5b93cb10003c93b00c6","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"sportracker80","configurations":{"android":"1:778828345523:android:b2d5b93cb10003c93b00c6","ios":"1:778828345523:ios:ec2a8520194696063b00c6","macos":"1:778828345523:ios:ec2a8520194696063b00c6","web":"1:778828345523:web:df1c06851f8f2fec3b00c6","windows":"1:778828345523:web:78e8adc1c01164ff3b00c6"}}}}}}
+{
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "platform": "gcfv1",
+
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local"
+      ],
+      "predeploy": [
+      ],
+        "runtime": "nodejs16"
+    }
+  ],
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "sportracker80",
+          "appId": "1:778828345523:android:b2d5b93cb10003c93b00c6",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "sportracker80",
+          "configurations": {
+            "android": "1:778828345523:android:b2d5b93cb10003c93b00c6",
+            "ios": "1:778828345523:ios:ec2a8520194696063b00c6",
+            "macos": "1:778828345523:ios:ec2a8520194696063b00c6",
+            "web": "1:778828345523:web:df1c06851f8f2fec3b00c6",
+            "windows": "1:778828345523:web:78e8adc1c01164ff3b00c6"
+          }
+        }
+      }
+    }
+  }
+}

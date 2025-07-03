@@ -20,7 +20,7 @@ class AddSomethingPage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const AddPerformancePage(),
+                    builder: (context) => AddPerformancePage(),
                   ),
                 );
               },
@@ -32,7 +32,7 @@ class AddSomethingPage extends StatelessWidget {
               onPressed: () {Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const AddProgramPage(),
+                    builder: (context) => AddProgramPage(),
                   ),
                 );
               },

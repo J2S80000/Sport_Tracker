@@ -1,334 +1,256 @@
+// AddProgramPage.dart
+
 import 'package:flutter/material.dart';
-import '../controllers/program_controller.dart';
-import '../models/program.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
+import '../viewmodels/add_program_view_model.dart';
+import '../models/exercise_block.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:convert';
+import '../models/exercise_card.dart';          // ← nouveau
 
-class AddProgramPage extends StatefulWidget {
-  const AddProgramPage({super.key});
+import 'package:http/http.dart' as http;
 
-  @override
-  State<AddProgramPage> createState() => _AddProgramPageState();
-}
+class AddProgramPage extends StatelessWidget {
+  final DateTime? initialDate;
+  final TextEditingController _promptController = TextEditingController();
 
-class _AddProgramPageState extends State<AddProgramPage> {
-  final _formKey = GlobalKey<FormState>();
-  final List<ExerciseBlock> _exercises = [];
-  DateTime _selectedDate = DateTime.now();
-
-  final TextEditingController _programNameController = TextEditingController();
-  final TextEditingController _commentController = TextEditingController();
+  AddProgramPage({super.key, this.initialDate});
 
   @override
-  void initState() {
-    super.initState();
-    _checkExistingProgram();
-  }
-
-  /// Normalise une date pour la comparaison (supprime l'heure)
-  String _formatDateForFirestore(DateTime date) {
-    return DateTime(date.year, date.month, date.day).toIso8601String().substring(0, 10);
-  }
-
-  Future<void> _checkExistingProgram() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return;
-
-    final dateKey = _formatDateForFirestore(_selectedDate);
-
-    final snapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(user.uid)
-        .collection('programmes')
-        .where('jour', isEqualTo: dateKey)
-        .limit(1)
-        .get();
-
-    if (snapshot.docs.isNotEmpty) {
-      final existing = snapshot.docs.first.data();
-      final nom = existing['nom'] ?? '(sans nom)';
-      final commentaire = existing['commentaire'] ?? '';
-      final exercices = List<Map<String, dynamic>>.from(existing['exercices'] ?? []);
-
-      _programNameController.text = nom;
-      _commentController.text = commentaire;
-      _exercises.clear();
-      _exercises.addAll(exercices.map((e) => ExerciseBlock.fromMap(e)));
-
-      final confirmed = await showDialog<bool>(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Programme existant'),
-          content: const Text('Un programme existe déjà pour ce jour. Voulez-vous le remplacer ?'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: const Text('Annuler'),
-            ),
-            TextButton(
-              onPressed: () => Navigator.pop(context, true),
-              child: const Text('Remplacer'),
-            ),
-          ],
-        ),
-      );
-
-      if (confirmed != true) {
-        DateTime newDate = _selectedDate;
-        QuerySnapshot testSnapshot;
-        // Trouver la prochaine date libre
-        do {
-          newDate = newDate.add(const Duration(days: 1));
-          final newDateKey = _formatDateForFirestore(newDate);
-          testSnapshot = await FirebaseFirestore.instance
-              .collection('users')
-              .doc(FirebaseAuth.instance.currentUser!.uid)
-              .collection('programmes')
-              .where('jour', isEqualTo: newDateKey)
-              .get();
-        } while (testSnapshot.docs.isNotEmpty);
-
-        setState(() {
-          _selectedDate = newDate;
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) {
+        final vm = AddProgramViewModel();
+        // Si une date initiale est fournie, l'utiliser
+        if (initialDate != null) {
+          vm.updateSelectedDate(initialDate!);
+        }
+        // Vérifier les programmes existants après la création
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          vm.checkExistingProgram(context);
         });
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text("Date automatiquement mise à jour au ${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}"),
-          ),
-        );
-        return; // Ne pas enregistrer, attendre nouvelle validation utilisateur
-      }
-    }
-  }
-
-  void _addExercise() {
-    setState(() {
-      _exercises.add(ExerciseBlock());
-    });
-  }
-
-  void _submitProgram() async {
-    final program = Program(
-      nom: _programNameController.text,
-      date: _formatDateForFirestore(_selectedDate), // 🔧 Format cohérent
-      commentaire: _commentController.text,
-      exercices: _exercises.map((e) => e.toMap()).toList(),
-    );
-
-    final controller = ProgramController();
-
-    try {
-      await controller.saveProgram(program);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('✅ Programme enregistré !')),
-      );
-      Navigator.pop(context);
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('❌ Erreur : ${e.toString()}')),
-      );
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Ajouter un programme")),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              TextFormField(
-                readOnly: true,
-                decoration: const InputDecoration(labelText: "Date du programme"),
-                controller: TextEditingController(
-                  text: "${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}",
-                ),
-                onTap: () async {
-                  final DateTime? picked = await showDatePicker(
-                    context: context,
-                    initialDate: _selectedDate,
-                    firstDate: DateTime.now().subtract(const Duration(days: 365)),
-                    lastDate: DateTime.now().add(const Duration(days: 365)),
-                  );
-                  if (picked != null && picked != _selectedDate) {
-                    setState(() {
-                      _selectedDate = picked;
-                    });
-                    _checkExistingProgram();
-                  }
-                },
-              ),
-              TextFormField(
-                controller: _programNameController,
-                decoration: const InputDecoration(labelText: "Nom du programme"),
-                validator: (value) => value == null || value.isEmpty ? 'Champ requis' : null,
-              ),
-              TextFormField(
-                controller: _commentController,
-                decoration: const InputDecoration(labelText: "Commentaire global (optionnel)"),
-              ),
-              const SizedBox(height: 20),
-              const Text("Exercices :", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-              const SizedBox(height: 10),
-              ..._exercises.map((e) => e.build(context)).toList(),
-              const SizedBox(height: 20),
-              ElevatedButton.icon(
-                onPressed: _addExercise,
-                icon: const Icon(Icons.add),
-                label: const Text("Ajouter un exercice"),
-              ),
-              const SizedBox(height: 30),
-              Center(
-                child: ElevatedButton(
-                  onPressed: _submitProgram,
-                  child: const Text("Enregistrer le programme"),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class ExerciseBlock {
-  String type = 'Shadow Boxing';
-  String subType = '';
-  String duration = '';
-  String distance = '';
-  String repetitions = '';
-  String intensity = 'Modérée';
-  String restTime = '';
-  String series = '';
-  bool accompli = false;
-
-  ExerciseBlock();
-
-  factory ExerciseBlock.fromMap(Map<String, dynamic> map) {
-    final block = ExerciseBlock();
-    block.type = map['type'] ?? block.type;
-    block.subType = map['subType'] ?? '';
-    block.duration = map['duration'] ?? '';
-    block.distance = map['distance'] ?? '';
-    block.repetitions = map['repetitions'] ?? '';
-    block.intensity = map['intensity'] ?? 'Modérée';
-    block.restTime = map['restTime'] ?? '';
-    block.series = map['series'] ?? '';
-    block.accompli = map['accompli'] ?? false;
-    return block;
-  }
-
-  Map<String, dynamic> toMap() {
-    return {
-      'type': type,
-      'subType': subType,
-      'duration': duration,
-      'distance': distance,
-      'repetitions': repetitions,
-      'series': series,
-      'intensity': intensity,
-      'restTime': restTime,
-      'accompli': accompli,
-    };
-  }
-
-  final Map<String, List<String>> subTypeOptions = {
-    'Street Workout': ['Pompes', 'Tractions', 'Dips', 'Abdos'],
-    'Course': [],
-    'Cardio libre': [],
-    'Shadow Boxing': [],
-    'Repos actif': [],
-  };
-
-  final List<String> intensityOptions = [
-    'Faible',
-    'Modérée',
-    'Élevée',
-  ];
-
-  Widget build(BuildContext context) {
-    return Card(
-      elevation: 2,
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: StatefulBuilder(
-          builder: (BuildContext context, StateSetter setState) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+        return vm;
+      },
+      child: Consumer<AddProgramViewModel>(
+        builder: (context, vm, _) => Scaffold(
+          appBar: AppBar(title: const Text("Ajouter un programme")),
+          body: Padding(
+            padding: const EdgeInsets.all(16),
+            child: ListView(
               children: [
-                DropdownButtonFormField<String>(
-                  value: type,
-                  decoration: const InputDecoration(labelText: "Type d'exercice"),
-                  items: subTypeOptions.keys
-                      .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-                      .toList(),
-                  onChanged: (val) {
-                    setState(() {
-                      type = val!;
-                      subType = '';
-                      duration = '';
-                      distance = '';
-                      repetitions = '';
-                      restTime = '';
-                    });
+                TextFormField(
+                  readOnly: true,
+                  decoration: const InputDecoration(labelText: "Date du programme"),
+                  controller: TextEditingController(
+                    text: "${vm.selectedDate.day}/${vm.selectedDate.month}/${vm.selectedDate.year}",
+                  )..selection = TextSelection.fromPosition(
+                    TextPosition(offset: "${vm.selectedDate.day}/${vm.selectedDate.month}/${vm.selectedDate.year}".length),
+                  ),
+                  onTap: () async {
+                    final picked = await showDatePicker(
+                      context: context,
+                      initialDate: vm.selectedDate,
+                      firstDate: DateTime.now().subtract(const Duration(days: 365)),
+                      lastDate: DateTime.now().add(const Duration(days: 365)),
+                    );
+                    if (picked != null) {
+                      vm.updateSelectedDate(picked);
+                      await vm.checkExistingProgram(context);
+                    }
                   },
                 ),
-                if (subTypeOptions[type]!.isNotEmpty)
-                  DropdownButtonFormField<String>(
-                    value: subType.isEmpty ? null : subType,
-                    decoration: const InputDecoration(labelText: "Sous-type"),
-                    items: subTypeOptions[type]!
-                        .map((e) => DropdownMenuItem<String>(value: e, child: Text(e)))
-                        .toList(),
-                    onChanged: (val) {
-                      setState(() => subType = val!);
-                    },
-                  ),
-                if (type == 'Street Workout' && subType.isNotEmpty)
-                  TextFormField(
-                    decoration: InputDecoration(labelText: "Nombre de répétitions pour $subType"),
-                    keyboardType: TextInputType.number,
-                    onChanged: (val) => repetitions = val,
-                  ),
-                if (type == 'Course')
-                  TextFormField(
-                    decoration: const InputDecoration(labelText: "Distance (en km)"),
-                    keyboardType: TextInputType.number,
-                    onChanged: (val) => distance = val,
-                  ),
-                if ((type == 'Street Workout' && subType.isNotEmpty) || type == 'Shadow Boxing' || type == 'Cardio libre')
-                  TextFormField(
-                    decoration: const InputDecoration(labelText: "Nombre de séries"),
-                    keyboardType: TextInputType.number,
-                    onChanged: (val) => series = val,
-                  ),
-                if (type == 'Course' || type == 'Shadow Boxing' || type == 'Cardio libre' || type == 'Repos actif')
-                  TextFormField(
-                    decoration: const InputDecoration(labelText: "Durée (en minutes)"),
-                    keyboardType: TextInputType.number,
-                    onChanged: (val) => duration = val,
-                  ),
-                if (type != 'Repos actif')
-                  DropdownButtonFormField<String>(
-                    value: intensity,
-                    decoration: const InputDecoration(labelText: "Intensité"),
-                    items: intensityOptions.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
-                    onChanged: (val) => setState(() => intensity = val!),
-                  ),
                 TextFormField(
-                  decoration: const InputDecoration(labelText: "Repos après l'exercice (en sec)"),
-                  keyboardType: TextInputType.number,
-                  onChanged: (val) => restTime = val,
+                  controller: vm.programNameController,
+                  decoration: const InputDecoration(labelText: "Nom du programme"),
+                ),
+                TextFormField(
+                  controller: vm.commentController,
+                  decoration: const InputDecoration(labelText: "Commentaire global (optionnel)"),
+                ),
+                TextFormField(
+                  controller: _promptController,
+                  decoration: const InputDecoration(
+                    labelText: "Demande personnalisée à l'IA",
+                    hintText: "Ex : crée un programme de remise en forme pour débutant",
+                  ),
+                  maxLines: 3,
+                ),
+                const SizedBox(height: 20),
+                const Text("Exercices :", style: TextStyle(fontWeight: FontWeight.bold)),
+                
+                // ✅ Modification : passage de l'index et du callback de suppression
+                ...vm.exercises.asMap().entries.map((entry) {
+                  final index = entry.key;
+                  final exercise = entry.value;
+                  
+                  return ExerciseCard(
+                    block: exercise,
+                    index: index,
+                    onDelete: () => vm.removeExercise(index),
+                  );
+                }).toList(),
+                
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        icon: vm.isGenerating 
+                            ? const SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                ),
+                              )
+                            : const Icon(Icons.flash_on),
+                        label: Text(vm.isGenerating ? "Génération en cours..." : "Générer avec l'IA"),
+                        onPressed: vm.isGenerating ? null : () async {
+                          final objectif = _promptController.text.trim();
+                          if (objectif.isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Veuillez saisir un objectif.')),
+                            );
+                            return;
+                          }
+
+                          // Démarrer le chargement
+                          vm.setGenerating=true;
+
+                          try {
+                            // 1) Requête vers ton Worker
+                            final uri = Uri.parse(
+                              'https://generate-program.sporttracker.workers.dev/generate-program',
+                            );
+                            final resp = await http.post(
+                              uri,
+                              headers: {'Content-Type': 'application/json'},
+                              body: jsonEncode({
+                                'uid': FirebaseAuth.instance.currentUser?.uid ?? 'ANON',
+                                'objectif': objectif,
+                                'date': vm.selectedDate.toIso8601String().substring(0, 10),
+                              }),
+                            );
+
+                            if (resp.statusCode != 200) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Erreur réseau : ${resp.statusCode}')),
+                              );
+                              return;
+                            }
+
+                            // 2) Parsing de la réponse
+                            final data = jsonDecode(resp.body);
+                            
+                            // Debug : afficher la réponse complète
+                            print('Réponse complète du Worker: $data');
+                            
+                            // 3) Injection des champs retournés
+                            vm.programNameController.text = data['nom']?.toString() ?? '';
+                            vm.commentController.text = data['commentaire']?.toString() ?? '';
+                            
+                            // 4) Traitement des exercices avec vérification
+                            if (data['exercices'] != null && data['exercices'] is List) {
+                              final exercicesList = data['exercices'] as List;
+                              print('Nombre d\'exercices reçus: ${exercicesList.length}');
+                              
+                              vm.exercises.clear();
+                              
+                              for (var exerciceData in exercicesList) {
+                                try {
+                                  // Vérification que exerciceData est bien un Map
+                                  if (exerciceData is Map<String, dynamic>) {
+                                    print('Traitement exercice: $exerciceData');
+                                    
+                                    // Ajout dynamique type/sous-type inconnus
+                                    final type = exerciceData['type']?.toString() ?? '';
+                                    final subType = exerciceData['subType']?.toString() ?? '';
+                                    
+                                    if (type.isNotEmpty) {
+                                      // Supprime les espaces en double, mais conserve l'intitulé exact (ex: "Renfo avec charges")
+                                      final cleanType = type.trim();
+                                      final cleanSubType = subType.trim();
+
+                                      // Initialise si nécessaire
+                                      if (!ExerciseBlock.subTypeOptions.containsKey(cleanType)) {
+                                        ExerciseBlock.subTypeOptions[cleanType] = [];
+                                      }
+
+                                      // Ajoute le sous-type s'il est défini et pas déjà présent
+                                      if (cleanSubType.isNotEmpty &&
+                                          !ExerciseBlock.subTypeOptions[cleanType]!.contains(cleanSubType)) {
+                                        ExerciseBlock.subTypeOptions[cleanType]!.add(cleanSubType);
+                                      }
+                                    }
+                                    
+                                    // Création de l'exercice
+                                    final exercice = ExerciseBlock.fromMap(exerciceData);
+                                    vm.exercises.add(exercice);
+                                    print('Exercice ajouté: ${exercice.type} - ${exercice.subType}');
+                                  } else {
+                                    print('Exercice invalide (pas un Map): $exerciceData');
+                                  }
+                                } catch (e) {
+                                  print('Erreur lors du traitement d\'un exercice: $e');
+                                  print('Données de l\'exercice: $exerciceData');
+                                }
+                              }
+                              
+                              print('Nombre total d\'exercices ajoutés: ${vm.exercises.length}');
+                              vm.notifyListeners();
+                              
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('✅ Programme généré avec ${vm.exercises.length} exercices !'),
+                                  backgroundColor: Colors.green,
+                                  behavior: SnackBarBehavior.floating,
+                                ),
+                              );
+                            } else {
+                              print('Aucun exercice trouvé dans la réponse ou format invalide');
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('⚠️ Aucun exercice généré par l\'IA'),
+                                  backgroundColor: Colors.orange,
+                                  behavior: SnackBarBehavior.floating,
+                                ),
+                              );
+                            }
+                            
+                          } catch (e) {
+                            print('Erreur générale: $e');
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('❌ Erreur lors de la génération : $e'),
+                                backgroundColor: Colors.red,
+                                behavior: SnackBarBehavior.floating,
+                              ),
+                            );
+                          } finally {
+                            // Arrêter le chargement dans tous les cas
+                            vm.setGenerating = false;
+                          }
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        icon: const Icon(Icons.add),
+                        label: const Text("Ajouter un exercice"),
+                        onPressed: vm.addExercise,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () => vm.submit(context),
+                  child: const Text("✅ Enregistrer le programme"),
                 ),
               ],
-            );
-          },
+            ),
+          ),
         ),
       ),
     );
