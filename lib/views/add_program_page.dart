@@ -219,7 +219,9 @@ await FirebaseFirestore.instance
       'commentaire': vm.commentController.text,
       'date': vm.selectedDate,
       'jour': jourFormatted,
-      'calories': totalCalories.round(),
+      'calories_pas': 0, // sera mis à jour par HomePage ensuite
+      'calories_exercices': totalCalories.round(),
+      'calories': totalCalories.round(), // total initial = exercices
       'exercices': vm.exercises.map((e) => e.toFirestore()).toList(),
     });
 

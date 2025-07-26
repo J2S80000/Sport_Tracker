@@ -42,13 +42,28 @@ void initState() {
 
 void initStepCounter() async {
   final status = await Permission.activityRecognition.request();
-  if (status.isGranted) {
-    _stepCountStream = Pedometer.stepCountStream;
-    _stepCountStream!.listen(onStepCount).onError(onStepCountError);
-  } else {
+  if (!status.isGranted) {
     print('Permission non accordée : $status');
+    return;
   }
+
+  final prefs = await SharedPreferences.getInstance();
+  final storedDate = prefs.getString('stepDate');
+  final storedStart = prefs.getInt('stepStart');
+
+if (storedDate == todaybd && storedStart != null) {
+  stepsAtStartOfDay = storedStart;
+  final lastKnownSteps = prefs.getInt('lastKnownSteps') ?? storedStart;
+  totalStepsToday = lastKnownSteps - storedStart;
+  print('Restauration immédiate des pas: $totalStepsToday');
+  setState(() {}); // Mettre à jour l’UI
+  await updateStepsAndCalories(); // ✅ Calculer immédiatement si on a des pas
 }
+
+  _stepCountStream = Pedometer.stepCountStream;
+  _stepCountStream!.listen(onStepCount).onError(onStepCountError);
+}
+
 
 void onStepCount(StepCount event) async {
   final now = DateTime.now();
@@ -81,7 +96,10 @@ void onStepCount(StepCount event) async {
 
   setState(() {
     totalStepsToday = event.steps - (stepsAtStartOfDay ?? event.steps);
+
+    
   });
+await prefs.setInt('lastKnownSteps', event.steps);
 
   print('Pas aujourd\'hui : $totalStepsToday');
 
@@ -93,14 +111,14 @@ Future<void> updateStepsAndCalories() async {
   final user = FirebaseAuth.instance.currentUser;
   if (user == null || totalStepsToday == null || programData == null) return;
 
-  // Charger le poids et taille utilisateur
+  // Charger poids et taille
   final userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
   final poids = userDoc.data()?['poids'] ?? 60;
   final taille = userDoc.data()?['taille'] ?? 170;
 
-  final calories = calculateCalories(totalStepsToday!, poids, taille);
+  final caloriesPas = calculateCalories(totalStepsToday!, poids, taille);
 
-  // Rechercher le programme du jour
+  // Charger le programme du jour
   final snapshot = await FirebaseFirestore.instance
       .collection('users')
       .doc(user.uid)
@@ -110,23 +128,27 @@ Future<void> updateStepsAndCalories() async {
       .get();
 
   if (snapshot.docs.isNotEmpty) {
-  final docRef = snapshot.docs.first.reference;
-  final existingData = snapshot.docs.first.data();
+    final docRef = snapshot.docs.first.reference;
+    final data = snapshot.docs.first.data();
 
-  final previousCalories = existingData['calories'] ?? 0;
-  final newCalories = previousCalories + calories;
+    final previousSteps = data['pas'] ?? 0;
 
-  final previousSteps = existingData['pas'] ?? 0;
-  final newSteps = previousSteps + totalStepsToday!;
+    final prevCaloriesPas = data['calories_pas'] ?? 0;
+    final caloriesExos = data['calories_exercices'] ?? 0;
 
- await docRef.update({
-  'pas': totalStepsToday!,
-  'calories': newCalories,
-});
+    final newCaloriesPas = caloriesPas;
+    final totalCalories = newCaloriesPas + caloriesExos;
 
+    await docRef.update({
+      'pas': totalStepsToday!,
+      'calories_pas': newCaloriesPas,
+      'calories_exercices': caloriesExos,
+      'calories': totalCalories, // Total toujours dispo
+    });
+    await fetchTodayProgram();
 
-  print('🔥 Programme mis à jour : +$totalStepsToday pas, +$calories kcal (Total: $newSteps / $newCalories)');
-}
+    print('🔥 Mise à jour : $totalStepsToday pas, $newCaloriesPas kcal (exos: $caloriesExos) => total: $totalCalories');
+  }
 }
 int calculateCalories(int steps, int poidsKg, int tailleCm) {
   // Estimation distance en km
@@ -208,7 +230,9 @@ Widget build(BuildContext context) {
                               Column(
                                 children: [
                                   const Text("Calories brûlées", style: TextStyle(fontWeight: FontWeight.bold)),
-                                  Text('${programData!['calories'] ?? 0} kcal', style: const TextStyle(fontSize: 20)),
+                                  Text('${(programData!['calories_pas'] ?? 0) + (programData!['calories_exercices'] ?? 0)} kcal', style: const TextStyle(fontSize: 20)),
+                                  Text("Pas : ${programData!['calories_pas'] ?? 0} kcal"),
+Text("Exos : ${programData!['calories_exercices'] ?? 0} kcal"),
                                 ],
                               ),
                             ],
@@ -256,7 +280,19 @@ Widget build(BuildContext context) {
                             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                           ),
                         ),
-                      ),
+                      ),Center(
+  child: ElevatedButton.icon(
+    icon: const Icon(Icons.local_fire_department),
+    label: const Text("Recalculer calories (pas + exos)"),
+    onPressed: () async {
+      await updateStepsAndCalories();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Calories mises à jour")),
+      );
+    },
+  ),
+),
+
 
                       const SizedBox(height: 30),
 
