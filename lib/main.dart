@@ -1,14 +1,14 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:sport_tracker/firebase_options.dart';
+import 'package:SportTracker/firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:sport_tracker/views/add_program_page.dart';
-import 'package:sport_tracker/views/calendar_page.dart';
-import 'package:sport_tracker/views/complete_profile_page.dart';
-import 'package:sport_tracker/views/home_page.dart';
-import 'package:sport_tracker/views/history_page.dart';
-import 'package:sport_tracker/views/login_page.dart';
-import 'package:sport_tracker/views/add_something_page.dart';
+import 'package:SportTracker/views/add_program_page.dart';
+import 'package:SportTracker/views/calendar_page.dart';
+import 'package:SportTracker/views/complete_profile_page.dart';
+import 'package:SportTracker/views/home_page.dart';
+import 'package:SportTracker/views/history_page.dart';
+import 'package:SportTracker/views/login_page.dart';
+import 'package:SportTracker/views/add_something_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 Future<void> main() async {

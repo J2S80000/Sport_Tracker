@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:sport_tracker/models/performanceview.dart';
+import 'package:SportTracker/models/performanceview.dart';
 
 class AddPerformancePage extends StatelessWidget {
   const AddPerformancePage({super.key});
