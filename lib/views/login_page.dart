@@ -1,7 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'register_page.dart'; // Assurez-vous d'importer la page d'inscription
+import 'complete_profile_page.dart';
+import 'register_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -22,15 +24,21 @@ class _LoginPageState extends State<LoginPage> {
         password: passwordController.text.trim(),
       );
     } catch (e) {
-      setState(() {
-        errorMessage = 'Erreur : ${e.toString()}';
-      });
+      if (mounted) {
+        setState(() {
+          errorMessage = 'Erreur : ${e.toString()}';
+        });
+      }
     }
   }
-  Future<void> signInWithGoogle() async {
+
+Future<void> signInWithGoogle() async {
   try {
     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-    if (googleUser == null) return; // L'utilisateur a annulé
+    if (googleUser == null) {
+      print('Google sign-in annulé');
+      return;
+    }
 
     final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
 
@@ -39,13 +47,27 @@ class _LoginPageState extends State<LoginPage> {
       idToken: googleAuth.idToken,
     );
 
-    await FirebaseAuth.instance.signInWithCredential(credential);
+    final userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+    final user = userCredential.user;
+
+    if (user == null) return;
+
+    print('Utilisateur connecté : ${user.email}, UID: ${user.uid}');
+
+    final doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+    print('Document existe ? ${doc.exists}');
+
+   
+
   } catch (e) {
-    setState(() {
-      errorMessage = 'Erreur Google : ${e.toString()}';
-    });
+    if (mounted) {
+      setState(() {
+        errorMessage = 'Erreur Google : ${e.toString()}';
+      });
+    }
   }
 }
+
 
   @override
   Widget build(BuildContext context) {
@@ -92,7 +114,6 @@ class _LoginPageState extends State<LoginPage> {
             ),
             if (errorMessage.isNotEmpty)
               Text(errorMessage, style: const TextStyle(color: Colors.red)),
-            
           ],
         ),
       ),

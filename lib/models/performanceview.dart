@@ -47,13 +47,72 @@ class AddPerformanceViewModel extends ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  final Map<String, List<String>> subTypeOptions = {
-    'Street Workout': ['Pompes', 'Tractions', 'Dips', 'Abdos'],
-    'Course': [],
-    'Cardio libre': [],
-    'Shadow Boxing': [],
-    'Repos actif': [],
-  };
+ final Map<String, List<String>> subTypeOptions = {
+  'Street Workout': [
+    'Pompes',
+    'Tractions',
+    'Dips',
+    'Abdos',
+    'Squats',
+    'Fentes',
+    'Gainage',
+    'Burpees',
+    'Mountain Climbers',
+    'Planche',
+    'Superman',
+    'Jump Squats',
+    'Pull-up isometrique',
+  ],
+  'Course': [
+    'Sprint',
+    'Endurance',
+    'Fractionne',
+    'Montee de cote',
+    'Descente',
+    'Tapis roulant',
+  ],
+  'Cardio libre': [
+    'Jumping Jacks',
+    'Burpees',
+    'High Knees',
+    'Montee de genoux',
+    'Corde a sauter',
+    'Tapis velo',
+    'Stepper',
+    'Escaliers',
+  ],
+  'Shadow Boxing': [
+    'Classique',
+    'Avec elastiques',
+    'Avec poids',
+    'Defense / Esquives',
+    'Travail vitesse',
+  ],
+  'Repos actif': [
+    'Marche lente',
+    'Etirements',
+    'Respiration',
+    'Mobilite',
+    'Roulements d\'epaules',
+    'Rotation de hanches',
+  ],
+  'Plyometrie': [
+    'Sauts sur boite',
+    'Sauts lateraux',
+    'Sauts groupes',
+    'Skaters',
+    'Burpees sautes',
+  ],
+  'Renfo avec charges': [
+    'Developpe couche',
+    'Squat barre',
+    'Souleve de terre',
+    'Rowing haltere',
+    'Developpe militaire',
+    'Curl biceps',
+    'Extension triceps',
+  ],
+};
 
   final List<String> intensityOptions = ['Faible', 'Modérée', 'Élevée'];
 
@@ -66,6 +125,7 @@ class AddPerformanceViewModel extends ChangeNotifier {
     String? series,
     String? restTime,
     String? intensity,
+    String? weight,
     String? commentaire,
   }) {
     if (type != null) {

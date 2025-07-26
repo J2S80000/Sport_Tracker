@@ -3,13 +3,17 @@ class AggregatedDataPoint {
   final double avgIntensity;
   final int count;
   final String nom;
+  final String commentaire;
   final String type;
   final String subType;
-  final String commentaire;
   final DateTime rawDate;
   final int? series;
   final int? duration;
+  final int? weight;
   final int? rest;
+
+  // 🔥 Ajoute ceci :
+  final double? totalCalories;
 
   AggregatedDataPoint({
     required this.label,
@@ -22,6 +26,10 @@ class AggregatedDataPoint {
     required this.rawDate,
     this.series,
     this.duration,
+    this.weight,
     this.rest,
+
+    // 🔥 Et ici :
+    this.totalCalories,
   });
 }

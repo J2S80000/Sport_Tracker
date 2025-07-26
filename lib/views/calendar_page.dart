@@ -18,33 +18,63 @@ class CaalendarPage extends StatelessWidget {
             child: Column(
               children: [
                 TableCalendar(
-                  firstDay: DateTime.utc(2025, 1, 1),
-                  lastDay: DateTime.utc(2026, 1, 1),
-                  focusedDay: vm.focusedDay,
-                  selectedDayPredicate: (day) => isSameDay(vm.selectedDay, day),
-                  onDaySelected: (selectedDay, focusedDay) {
-                    vm.loadProgramForDate(selectedDay);
-                    vm.setFocusedDay(focusedDay);
-                  },
-                  calendarBuilders: CalendarBuilders(
-                    defaultBuilder: (context, day, _) {
-                      final color = vm.dayColors[vm.normalizeDate(day)];
-                      return Container(
-                        decoration: BoxDecoration(
-                          color: color ?? Colors.transparent,
-                          shape: BoxShape.circle,
-                        ),
-                        alignment: Alignment.center,
-                        child: Text(
-                          '${day.day}',
-                          style: TextStyle(
-                            color: color != null ? Colors.white : Colors.black,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
+  firstDay: DateTime.utc(2025, 1, 1),
+  lastDay: DateTime.utc(2026, 1, 1),
+  focusedDay: vm.focusedDay,
+  selectedDayPredicate: (day) => isSameDay(vm.selectedDay, day),
+  onDaySelected: (selectedDay, focusedDay) {
+    vm.loadProgramForDate(selectedDay);
+    vm.setFocusedDay(focusedDay);
+  },
+  calendarStyle: CalendarStyle(
+    // ✅ Par défaut, texte adaptatif
+    defaultTextStyle: TextStyle(
+      color: Theme.of(context).brightness == Brightness.dark
+          ? Colors.white
+          : Colors.black,
+    ),
+    weekendTextStyle: TextStyle(
+      color: Theme.of(context).brightness == Brightness.dark
+          ? Colors.grey[300]
+          : Colors.redAccent,
+    ),
+    outsideTextStyle: TextStyle(
+      color: Theme.of(context).brightness == Brightness.dark
+          ? Colors.grey[700]
+          : Colors.grey,
+    ),
+    todayDecoration: BoxDecoration(
+      color: Colors.blue.withOpacity(0.5),
+      shape: BoxShape.circle,
+    ),
+    selectedDecoration: BoxDecoration(
+      color: Colors.blue,
+      shape: BoxShape.circle,
+    ),
+  ),
+  calendarBuilders: CalendarBuilders(
+    defaultBuilder: (context, day, _) {
+      final color = vm.dayColors[vm.normalizeDate(day)];
+      return Container(
+        decoration: BoxDecoration(
+          color: color ?? Colors.transparent,
+          shape: BoxShape.circle,
+        ),
+        alignment: Alignment.center,
+        child: Text(
+          '${day.day}',
+          style: TextStyle(
+            color: color != null
+                ? Colors.white
+                : Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white
+                    : Colors.black,
+          ),
+        ),
+      );
+    },
+  ),
+),
                 const SizedBox(height: 12),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -56,10 +86,43 @@ class CaalendarPage extends StatelessWidget {
                 ),
                 const Divider(height: 30),
                 if (vm.selectedDay != null)
-                  Text(
-                    "Programme du ${vm.selectedDay!.day.toString().padLeft(2, '0')}/${vm.selectedDay!.month.toString().padLeft(2, '0')}/${vm.selectedDay!.year}",
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
+                 if (vm.isGenerating) const LinearProgressIndicator(),
+const SizedBox(height: 12),
+
+Row(
+  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+  children: [
+    Expanded(
+      child: ElevatedButton.icon(
+        icon: const Icon(Icons.view_week),
+        label: const Text("Générer la semaine"),
+        onPressed: vm.isGenerating
+            ? null
+            : () => _showPromptDialog(context, vm, 'week'),
+      ),
+    ),
+    const SizedBox(width: 8),
+    Expanded(
+      child: ElevatedButton.icon(
+        icon: const Icon(Icons.calendar_month),
+        label: const Text("Générer le mois"),
+        onPressed: vm.isGenerating
+            ? null
+            : () => _showPromptDialog(context, vm, 'month'),
+      ),
+    ),
+  ],
+),
+const SizedBox(height: 12),
+
+if (vm.selectedDay != null)
+  Text(
+    "Programme du ${vm.selectedDay!.day.toString().padLeft(2, '0')}/"
+    "${vm.selectedDay!.month.toString().padLeft(2, '0')}/${vm.selectedDay!.year}",
+    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+  )
+else
+  const Text("Aucune date sélectionnée"),
 
                 const SizedBox(height: 8),
                 ElevatedButton.icon(
@@ -176,3 +239,35 @@ class _LegendItem extends StatelessWidget {
     );
   }
 }
+void _showPromptDialog(BuildContext context, CalendarViewModel vm, String range) {
+  final controller = TextEditingController(text: vm.objectifCtrl.text);
+
+  showDialog(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      title: Text("Objectif pour la ${range == 'week' ? 'semaine' : 'mois'}"),
+      content: TextField(
+        controller: controller,
+        decoration: const InputDecoration(
+          labelText: "Décris ton objectif (ex: cardio, renfo, repos...)",
+        ),
+        autofocus: true,
+      ),
+      actions: [
+        TextButton(
+          child: const Text("Annuler"),
+          onPressed: () => Navigator.of(ctx).pop(),
+        ),
+        TextButton(
+          child: const Text("Valider"),
+          onPressed: () {
+            Navigator.of(ctx).pop();
+            vm.objectifCtrl.text = controller.text;
+            vm.generateBatch(context, range: range);
+          },
+        ),
+      ],
+    ),
+  );
+}
+

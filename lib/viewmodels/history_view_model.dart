@@ -7,26 +7,13 @@ import '../models/aggregated_data_point.dart';
 import '../models/exercise_block.dart';
 
 class HistoryViewModel extends ChangeNotifier {
-  /* ───────────────────────────────────────────────────────────── */
-  /* Options de type  (menu déroulant)                            */
-  /* ───────────────────────────────────────────────────────────── */
-  final List<String> typeOptions =
-      ExerciseBlock.subTypeOptions.keys.toList()..sort();
+  final List<String> typeOptions = ExerciseBlock.subTypeOptions.keys.toList()..sort();
 
   String selectedType = 'Shadow Boxing';
-
-  /* ───────────────────────────────────────────────────────────── */
-  /* Gestion du sous-type (flèches)                               */
-  /* ───────────────────────────────────────────────────────────── */
   int _subTypeIndex = 0;
 
-  /// Liste courante des sous-types pour le type sélectionné
-  List<String> get _currentSubTypes =>
-      ExerciseBlock.subTypeOptions[selectedType] ?? const [];
-
-  /// Sous-type actuellement choisi
-  String get selectedSubType =>
-      _currentSubTypes.isNotEmpty ? _currentSubTypes[_subTypeIndex] : '';
+  List<String> get _currentSubTypes => ExerciseBlock.subTypeOptions[selectedType] ?? const [];
+  String get selectedSubType => _currentSubTypes.isNotEmpty ? _currentSubTypes[_subTypeIndex] : '';
 
   void nextSubType() {
     if (_currentSubTypes.isEmpty) return;
@@ -36,21 +23,17 @@ class HistoryViewModel extends ChangeNotifier {
 
   void previousSubType() {
     if (_currentSubTypes.isEmpty) return;
-    _subTypeIndex =
-        (_subTypeIndex - 1 + _currentSubTypes.length) % _currentSubTypes.length;
+    _subTypeIndex = (_subTypeIndex - 1 + _currentSubTypes.length) % _currentSubTypes.length;
     loadData();
   }
 
-  /* ───────────────────────────────────────────────────────────── */
-  /* Autres paramètres (période, accompli)                        */
-  /* ───────────────────────────────────────────────────────────── */
   final List<String> periodOptions = ['Semaine', 'Mois', 'Année', 'Jour'];
   String selectedPeriod = 'Semaine';
   bool onlyCompleted = false;
 
   void setType(String val) {
     selectedType = val;
-    _subTypeIndex = 0; // on repart au 1ᵉʳ sous-type
+    _subTypeIndex = 0;
     loadData();
   }
 
@@ -64,9 +47,6 @@ class HistoryViewModel extends ChangeNotifier {
     loadData();
   }
 
-  /* ───────────────────────────────────────────────────────────── */
-  /* Chargement & agrégation                                      */
-  /* ───────────────────────────────────────────────────────────── */
   List<AggregatedDataPoint> dataPoints = [];
 
   Future<void> loadData() async {
@@ -86,13 +66,13 @@ class HistoryViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  List<AggregatedDataPoint> _aggregateByDay(
-      List<QueryDocumentSnapshot> docs) {
+  List<AggregatedDataPoint> _aggregateByDay(List<QueryDocumentSnapshot> docs) {
     final List<AggregatedDataPoint> list = [];
 
     for (var doc in docs) {
       final data = doc.data() as Map<String, dynamic>;
       final dateStr = data['jour']?.substring(0, 10);
+      final calories = (data['calories'] ?? 0).toDouble();
       if (dateStr == null) continue;
       final date = DateTime.parse(dateStr);
 
@@ -100,11 +80,7 @@ class HistoryViewModel extends ChangeNotifier {
         if (e['type'] == selectedType &&
             e['subType'] == selectedSubType &&
             (!onlyCompleted || e['accompli'] == true)) {
-          final intensity = _computeIntensity(
-            int.tryParse(e['series'] ?? '1') ?? 1,
-            int.tryParse(e['duration'] ?? '1') ?? 1,
-            int.tryParse(e['restTime'] ?? '0') ?? 0,
-          );
+          final intensity = _computeIntensity(e);
 
           list.add(
             AggregatedDataPoint(
@@ -118,6 +94,8 @@ class HistoryViewModel extends ChangeNotifier {
               rawDate: date,
               series: int.tryParse(e['series'] ?? '1'),
               duration: int.tryParse(e['duration'] ?? '1'),
+              totalCalories: calories,
+              weight: int.tryParse(e['weight'] ?? '0'),
               rest: int.tryParse(e['restTime'] ?? '0'),
             ),
           );
@@ -129,12 +107,12 @@ class HistoryViewModel extends ChangeNotifier {
     return list;
   }
 
-  List<AggregatedDataPoint> _aggregateByGroup(
-      List<QueryDocumentSnapshot> docs) {
+  List<AggregatedDataPoint> _aggregateByGroup(List<QueryDocumentSnapshot> docs) {
     final grouped = <String, List<double>>{};
     final counts = <String, int>{};
     final noms = <String, String>{};
     final commentaires = <String, String>{};
+    final caloriesTotals = <String, double>{};
 
     for (var doc in docs) {
       final data = doc.data() as Map<String, dynamic>;
@@ -142,16 +120,14 @@ class HistoryViewModel extends ChangeNotifier {
       if (dateStr == null) continue;
       final date = DateTime.parse(dateStr);
       final key = _getPeriodKey(date);
+      final calories = (data['calories'] ?? 0).toDouble();
+      caloriesTotals.update(key, (v) => v + calories, ifAbsent: () => calories);
 
       for (var e in (data['exercices'] ?? [])) {
         if (e['type'] == selectedType &&
             e['subType'] == selectedSubType &&
             (!onlyCompleted || e['accompli'] == true)) {
-          final intensity = _computeIntensity(
-            int.tryParse(e['series'] ?? '1') ?? 1,
-            int.tryParse(e['duration'] ?? '1') ?? 1,
-            int.tryParse(e['restTime'] ?? '0') ?? 0,
-          );
+          final intensity = _computeIntensity(e);
           grouped.putIfAbsent(key, () => []).add(intensity);
           counts.update(key, (v) => v + 1, ifAbsent: () => 1);
           noms[key] = data['nom'] ?? '';
@@ -170,8 +146,8 @@ class HistoryViewModel extends ChangeNotifier {
         commentaire: commentaires[e.key] ?? '',
         type: selectedType,
         subType: selectedSubType,
-        rawDate:
-            DateTime.tryParse(e.key.split('-').first) ?? DateTime(2000),
+        rawDate: DateTime.tryParse(e.key.split('-').first) ?? DateTime(2000),
+        totalCalories: caloriesTotals[e.key] ?? 0,
       );
     }).toList()
       ..sort((a, b) => a.rawDate.compareTo(b.rawDate));
@@ -179,9 +155,51 @@ class HistoryViewModel extends ChangeNotifier {
     return result;
   }
 
-  /* Utilitaires */
-  double _computeIntensity(int series, int duration, int rest) =>
-      (series * duration) / (1 + rest / 60);
+  double _computeIntensity(Map<String, dynamic> e) {
+    final type = e['type'] as String? ?? '';
+    final intensityS = (e['intensity'] ?? 'Moderee').toString();
+    final intensMul = switch (intensityS) {
+      'Faible' => 1.0,
+      'Elevee' => 2.0,
+      _ => 1.5,
+    };
+
+    int _i(String k, [int d = 0]) => int.tryParse(e[k]?.toString() ?? '') ?? d;
+    double _d(String k, [double d = 0]) => double.tryParse(e[k]?.toString() ?? '') ?? d;
+
+    final series = _i('series', 1);
+    final reps = _i('repetitions', 1);
+    final dur = _i('duration', 1);
+    final rest = _i('restTime', 0);
+    final dist = _d('distance', 0);
+    final poids = _d('weight', 0);
+
+    double base;
+
+    switch (type) {
+      case 'Street Workout':
+      case 'Plyometrie':
+        base = (series * reps) * (1 + poids / 40);
+        base /= (1 + rest / 60);
+        break;
+      case 'Renfo avec charges':
+        base = (series * reps) * (1 + poids / 30);
+        base /= (1 + rest / 90);
+        break;
+      case 'Course':
+        final effort = dist > 0 ? dist * 10 : dur.toDouble();
+        base = effort / (1 + rest / 120);
+        break;
+      case 'Cardio libre':
+      case 'Shadow Boxing':
+        base = (dur * series) / (1 + rest / 90);
+        break;
+      default:
+        base = 0;
+    }
+
+    return base * intensMul;
+  }
 
   String _getPeriodKey(DateTime date) {
     switch (selectedPeriod) {

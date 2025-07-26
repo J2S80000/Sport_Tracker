@@ -32,6 +32,7 @@ class AddPerformancePage extends StatelessWidget {
                             .toList(),
                         onChanged: (val) => vm.updateField(type: val),
                       ),
+
                       if (vm.subTypeOptions[type]!.isNotEmpty)
                         DropdownButtonFormField<String>(
                           value: subType.isEmpty ? null : subType,
@@ -41,30 +42,55 @@ class AddPerformancePage extends StatelessWidget {
                               .toList(),
                           onChanged: (val) => vm.updateField(subType: val),
                         ),
-                      if (type == 'Street Workout' && subType.isNotEmpty)
+
+                      // Répétitions : Street Workout, Plyométrie, Renfo avec charges
+                      if ((type == 'Street Workout' || type == 'Plyometrie' || type == 'Renfo avec charges') && subType.isNotEmpty)
                         TextFormField(
                           decoration: InputDecoration(labelText: "Nombre de répétitions pour $subType"),
                           keyboardType: TextInputType.number,
                           onChanged: (val) => vm.updateField(repetitions: val),
                         ),
+
+                      // Distance : Course
                       if (type == 'Course')
                         TextFormField(
                           decoration: const InputDecoration(labelText: "Distance (en km)"),
                           keyboardType: TextInputType.number,
                           onChanged: (val) => vm.updateField(distance: val),
                         ),
-                      if ((type == 'Street Workout' && subType.isNotEmpty) || type == 'Shadow Boxing' || type == 'Cardio libre')
+
+                      // Séries : Street Workout, Plyométrie, Renfo avec charges, Shadow Boxing, Cardio libre
+                      if ((type == 'Street Workout' && subType.isNotEmpty) ||
+                          (type == 'Plyometrie' && subType.isNotEmpty) ||
+                          (type == 'Renfo avec charges' && subType.isNotEmpty) ||
+                          type == 'Shadow Boxing' ||
+                          type == 'Cardio libre')
                         TextFormField(
                           decoration: const InputDecoration(labelText: "Nombre de séries"),
                           keyboardType: TextInputType.number,
                           onChanged: (val) => vm.updateField(series: val),
                         ),
-                      if (type == 'Course' || type == 'Shadow Boxing' || type == 'Cardio libre' || type == 'Repos actif')
+
+                      // Durée : Course, Shadow Boxing, Cardio libre, Repos actif
+                      if (type == 'Course' ||
+                          type == 'Shadow Boxing' ||
+                          type == 'Cardio libre' ||
+                          type == 'Repos actif')
                         TextFormField(
                           decoration: const InputDecoration(labelText: "Durée (en minutes)"),
                           keyboardType: TextInputType.number,
                           onChanged: (val) => vm.updateField(duration: val),
                         ),
+
+                      // Poids : Renfo avec charges
+                      if (type == 'Renfo avec charges' && subType.isNotEmpty)
+                        TextFormField(
+                          decoration: const InputDecoration(labelText: "Poids (en kg)"),
+                          keyboardType: TextInputType.number,
+                          onChanged: (val) => vm.updateField(weight: val),
+                        ),
+
+                      // Intensité : tous sauf Repos actif
                       if (type != 'Repos actif')
                         DropdownButtonFormField<String>(
                           value: vm.model.intensity.isEmpty ? null : vm.model.intensity,
@@ -74,16 +100,22 @@ class AddPerformancePage extends StatelessWidget {
                               .toList(),
                           onChanged: (val) => vm.updateField(intensity: val),
                         ),
+
+                      // Repos : tous
                       TextFormField(
                         decoration: const InputDecoration(labelText: "Repos après l'exercice (en sec)"),
                         keyboardType: TextInputType.number,
                         onChanged: (val) => vm.updateField(restTime: val),
                       ),
+
+                      // Commentaire
                       TextFormField(
                         decoration: const InputDecoration(labelText: "Commentaire"),
                         onChanged: (val) => vm.updateField(commentaire: val),
                       ),
+
                       const SizedBox(height: 20),
+
                       Center(
                         child: ElevatedButton(
                           onPressed: () async {

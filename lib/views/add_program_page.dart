@@ -5,9 +5,9 @@ import 'package:provider/provider.dart';
 import '../viewmodels/add_program_view_model.dart';
 import '../models/exercise_block.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:convert';
-import '../models/exercise_card.dart';          // ← nouveau
-
+import '../models/exercise_card.dart';
 import 'package:http/http.dart' as http;
 
 class AddProgramPage extends StatelessWidget {
@@ -16,16 +16,22 @@ class AddProgramPage extends StatelessWidget {
 
   AddProgramPage({super.key, this.initialDate});
 
+  Future<double> _calculateTotalCalories(List<ExerciseBlock> exercises, double poids) async {
+    double total = 0;
+    for (final ex in exercises) {
+      total += ex.estimateCalories(poids: poids);
+    }
+    return total;
+  }
+
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (_) {
         final vm = AddProgramViewModel();
-        // Si une date initiale est fournie, l'utiliser
         if (initialDate != null) {
           vm.updateSelectedDate(initialDate!);
         }
-        // Vérifier les programmes existants après la création
         WidgetsBinding.instance.addPostFrameCallback((_) {
           vm.checkExistingProgram(context);
         });
@@ -77,19 +83,15 @@ class AddProgramPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 20),
                 const Text("Exercices :", style: TextStyle(fontWeight: FontWeight.bold)),
-                
-                // ✅ Modification : passage de l'index et du callback de suppression
                 ...vm.exercises.asMap().entries.map((entry) {
                   final index = entry.key;
                   final exercise = entry.value;
-                  
                   return ExerciseCard(
                     block: exercise,
                     index: index,
                     onDelete: () => vm.removeExercise(index),
                   );
                 }).toList(),
-                
                 Row(
                   children: [
                     Expanded(
@@ -113,15 +115,9 @@ class AddProgramPage extends StatelessWidget {
                             );
                             return;
                           }
-
-                          // Démarrer le chargement
-                          vm.setGenerating=true;
-
+                          vm.setGenerating = true;
                           try {
-                            // 1) Requête vers ton Worker
-                            final uri = Uri.parse(
-                              'https://generate-program.sporttracker.workers.dev/generate-program',
-                            );
+                            final uri = Uri.parse('https://generate-program.sporttracker.workers.dev/generate-program');
                             final resp = await http.post(
                               uri,
                               headers: {'Content-Type': 'application/json'},
@@ -131,74 +127,25 @@ class AddProgramPage extends StatelessWidget {
                                 'date': vm.selectedDate.toIso8601String().substring(0, 10),
                               }),
                             );
-
                             if (resp.statusCode != 200) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(content: Text('Erreur réseau : ${resp.statusCode}')),
                               );
                               return;
                             }
-
-                            // 2) Parsing de la réponse
                             final data = jsonDecode(resp.body);
-                            
-                            // Debug : afficher la réponse complète
-                            print('Réponse complète du Worker: $data');
-                            
-                            // 3) Injection des champs retournés
                             vm.programNameController.text = data['nom']?.toString() ?? '';
                             vm.commentController.text = data['commentaire']?.toString() ?? '';
-                            
-                            // 4) Traitement des exercices avec vérification
                             if (data['exercices'] != null && data['exercices'] is List) {
                               final exercicesList = data['exercices'] as List;
-                              print('Nombre d\'exercices reçus: ${exercicesList.length}');
-                              
                               vm.exercises.clear();
-                              
                               for (var exerciceData in exercicesList) {
-                                try {
-                                  // Vérification que exerciceData est bien un Map
-                                  if (exerciceData is Map<String, dynamic>) {
-                                    print('Traitement exercice: $exerciceData');
-                                    
-                                    // Ajout dynamique type/sous-type inconnus
-                                    final type = exerciceData['type']?.toString() ?? '';
-                                    final subType = exerciceData['subType']?.toString() ?? '';
-                                    
-                                    if (type.isNotEmpty) {
-                                      // Supprime les espaces en double, mais conserve l'intitulé exact (ex: "Renfo avec charges")
-                                      final cleanType = type.trim();
-                                      final cleanSubType = subType.trim();
-
-                                      // Initialise si nécessaire
-                                      if (!ExerciseBlock.subTypeOptions.containsKey(cleanType)) {
-                                        ExerciseBlock.subTypeOptions[cleanType] = [];
-                                      }
-
-                                      // Ajoute le sous-type s'il est défini et pas déjà présent
-                                      if (cleanSubType.isNotEmpty &&
-                                          !ExerciseBlock.subTypeOptions[cleanType]!.contains(cleanSubType)) {
-                                        ExerciseBlock.subTypeOptions[cleanType]!.add(cleanSubType);
-                                      }
-                                    }
-                                    
-                                    // Création de l'exercice
-                                    final exercice = ExerciseBlock.fromMap(exerciceData);
-                                    vm.exercises.add(exercice);
-                                    print('Exercice ajouté: ${exercice.type} - ${exercice.subType}');
-                                  } else {
-                                    print('Exercice invalide (pas un Map): $exerciceData');
-                                  }
-                                } catch (e) {
-                                  print('Erreur lors du traitement d\'un exercice: $e');
-                                  print('Données de l\'exercice: $exerciceData');
+                                if (exerciceData is Map<String, dynamic>) {
+                                  final exercice = ExerciseBlock.fromMap(exerciceData);
+                                  vm.exercises.add(exercice);
                                 }
                               }
-                              
-                              print('Nombre total d\'exercices ajoutés: ${vm.exercises.length}');
                               vm.notifyListeners();
-                              
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text('✅ Programme généré avec ${vm.exercises.length} exercices !'),
@@ -207,7 +154,6 @@ class AddProgramPage extends StatelessWidget {
                                 ),
                               );
                             } else {
-                              print('Aucun exercice trouvé dans la réponse ou format invalide');
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                   content: Text('⚠️ Aucun exercice généré par l\'IA'),
@@ -216,9 +162,7 @@ class AddProgramPage extends StatelessWidget {
                                 ),
                               );
                             }
-                            
                           } catch (e) {
-                            print('Erreur générale: $e');
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text('❌ Erreur lors de la génération : $e'),
@@ -227,7 +171,6 @@ class AddProgramPage extends StatelessWidget {
                               ),
                             );
                           } finally {
-                            // Arrêter le chargement dans tous les cas
                             vm.setGenerating = false;
                           }
                         },
@@ -245,7 +188,44 @@ class AddProgramPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 20),
                 ElevatedButton(
-                  onPressed: () => vm.submit(context),
+                  onPressed: () async {
+  final user = FirebaseAuth.instance.currentUser;
+  if (user == null) return;
+
+  // Récupération du poids
+  final userDoc = await FirebaseFirestore.instance
+      .collection('users')
+      .doc(user.uid)
+      .get();
+  final poids = (userDoc.data()?['poids'] ?? 70).toDouble();
+
+  // Calcul des calories
+  final totalCalories = await _calculateTotalCalories(vm.exercises, poids);
+
+  // Format de la date : "2025-07-21"
+  final jourFormatted = "${vm.selectedDate.year.toString().padLeft(4, '0')}-"
+                        "${vm.selectedDate.month.toString().padLeft(2, '0')}-"
+                        "${vm.selectedDate.day.toString().padLeft(2, '0')}";
+
+  // Enregistrement dans Firestore
+await FirebaseFirestore.instance
+    .collection('users')
+    .doc(user.uid)
+    .collection('programmes')
+    .doc(jourFormatted) // ← ID personnalisé : "2025-07-26"
+    .set({
+      'uid': user.uid,
+      'nom': vm.programNameController.text,
+      'commentaire': vm.commentController.text,
+      'date': vm.selectedDate,
+      'jour': jourFormatted,
+      'calories': totalCalories.round(),
+      'exercices': vm.exercises.map((e) => e.toFirestore()).toList(),
+    });
+
+  Navigator.pop(context);
+},
+
                   child: const Text("✅ Enregistrer le programme"),
                 ),
               ],

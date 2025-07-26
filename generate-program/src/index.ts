@@ -45,6 +45,12 @@ const MODEL = "deepseek/deepseek-chat:free"
 // Prompt journalier
 function buildPrompt(stats: any, objectif: string, body: BodyIn): string {
   const selectedDate = body.date || new Date().toISOString().split('T')[0]
+   const accomplished = (stats?.programs ?? [])
+    .flatMap((p: any) => p.exercices || [])
+    .filter((e: any) => e.accompli === true)
+    .map((e: any) => `${e.type} – ${e.subType}`)
+    .join(', ')
+
   return `
 Tu es un coach sportif IA. En t'appuyant sur les statistiques JSON suivantes
 et l'objectif **[${objectif}]**, genere **un programme au format JSON strict**.
@@ -107,6 +113,12 @@ function buildBatchPrompt(
   count: number,
   startDate: string
 ): string {
+   const accomplished = (stats?.programs ?? [])
+    .flatMap((p: any) => p.exercices || [])
+    .filter((e: any) => e.accompli === true)
+    .map((e: any) => `${e.type} – ${e.subType}`)
+    .join(', ')
+
   return `
 Tu es un coach sportif IA.
 
@@ -236,6 +248,9 @@ if (!body.uid) return new Response('uid missing', { status: 400, headers: cors }
     const isBatch = new URL(req.url).pathname.endsWith('/generate-programs')
     const objectif = body.objectif || 'Maintenir le rythme'
     const stats = body.stats || {}
+    const completed = stats?.programs
+  ?.flatMap((p: any) => p.exercices || [])
+  ?.filter((e: any) => e.accompli === true)
 
     const openai = new OpenAI({ baseURL: 'https://openrouter.ai/api/v1', apiKey: env.OPENROUTER_API_KEY })
 

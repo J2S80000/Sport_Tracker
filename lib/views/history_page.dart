@@ -139,12 +139,36 @@ class HistoryPage extends StatelessWidget {
 subtitle: Column(
   crossAxisAlignment: CrossAxisAlignment.start,
   children: [
-    Text("Exercice : ${p.type ?? ''} ${p.subType ?? ''}"),
-    if (p.series != null) Text("Séries : ${p.series}"),
-    if (p.duration != null) Text("Durée : ${p.duration} min"),
-    if (p.rest != null) Text("Repos : ${p.rest} sec"),
+    Text("Exercice : ${p.type} ${p.subType}"),
+
+    if ([
+      'Street Workout',
+      'Plyometrie',
+      'Renfo avec charges',
+      'Shadow Boxing',
+      'Cardio libre'
+    ].contains(p.type) && p.series != null)
+      Text("Séries : ${p.series}"),
+
+    if ([
+      'Course',
+      'Shadow Boxing',
+      'Cardio libre',
+      'Repos actif'
+    ].contains(p.type) && p.duration != null)
+      Text("Durée : ${p.duration} min"),
+
+    if (p.type == 'Renfo avec charges' && p.weight != null)
+      Text("Poids : ${p.weight} kg"),
+
+    if (p.rest != null)
+      Text("Repos : ${p.rest} sec"),
+
     if (p.nom.isNotEmpty || p.commentaire.isNotEmpty)
       Text("Programme : ${p.nom} • ${p.commentaire}"),
+
+    if (p.totalCalories != null)
+      Text("🔥 Calories brûlées : ${p.totalCalories!.round()} kcal"),
   ],
 ),
                     );

@@ -57,6 +57,60 @@ class ExerciseBlock {
     }
   }
 
+  static double _getMET(String type, String subType, String intensity) {
+  double baseMET;
+
+  switch (type.toLowerCase()) {
+    case 'cardio libre':
+    case 'course':
+    case 'shadow boxing':
+      baseMET = 6.0;
+      break;
+    case 'renfo avec charges':
+    case 'street workout':
+      baseMET = 5.0;
+      break;
+    case 'plyometrie':
+      baseMET = 7.0;
+      break;
+    case 'repos actif':
+      baseMET = 2.0;
+      break;
+    default:
+      baseMET = 4.0;
+  }
+
+  switch (intensity.toLowerCase()) {
+    case 'faible':
+      return baseMET * 0.8;
+    case 'elevee':
+      return baseMET * 1.2;
+    default:
+      return baseMET;
+  }
+}
+
+int _getDurationEstimate() {
+  final int? parsedDuration = int.tryParse(duration);
+  if (parsedDuration != null && parsedDuration > 0) return parsedDuration;
+
+  final int? reps = int.tryParse(repetitions);
+  if (reps != null && reps > 0) {
+    // Hypothèse : 10 reps ≈ 1 min
+    return (reps / 10).ceil();
+  }
+
+  return 1; // Valeur par défaut
+}
+
+double estimateCalories({required double poids}) {
+  final met = _getMET(type, subType, intensity);
+  final durationMin = _getDurationEstimate();
+
+  // Formule classique : calories = MET × poids × durée (en heures)
+  return met * poids * (durationMin / 60);
+}
+
   factory ExerciseBlock.fromMap(Map<String, dynamic> map) {
     final block = ExerciseBlock();
     block.type = map['type'] ?? block.type;
@@ -80,6 +134,7 @@ class ExerciseBlock {
         'repetitions': repetitions,
         'series': series,
         'intensity': intensity,
+        'weight': weight,
         'restTime': restTime,
         'accompli': false,
       };
