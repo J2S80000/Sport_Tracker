@@ -115,7 +115,9 @@ double estimateCalories({required double poids}) {
     final block = ExerciseBlock();
     block.type = map['type'] ?? block.type;
     block.subType = map['subType'] ?? '';
-    block.duration = _secToMin(map['duration']?.toString() ?? '').toString();
+    block.duration = (map['duration']?.toString().isNotEmpty ?? false)
+    ? _secToMin(map['duration'].toString()).toString()
+    : '0';
     block.distance = map['distance'] ?? '';
     block.repetitions = map['repetitions'] ?? '';
     block.intensity = _normalizeIntensity(map['intensity'] ?? 'Moderee');

@@ -115,7 +115,8 @@ class _ExerciseCardState extends State<ExerciseCard> {
             if (b.type == 'Course' ||
                 b.type == 'Shadow Boxing' ||
                 b.type == 'Cardio libre' ||
-                b.type == 'Repos actif')
+                b.type == 'Repos actif' ||
+    (b.type == 'Street Workout' && b.subType == 'Gainage'))
               TextFormField(
                 initialValue: b.duration,
                 decoration: const InputDecoration(labelText: "Durée (minutes)"),

@@ -105,7 +105,7 @@ Row(
     Expanded(
       child: ElevatedButton.icon(
         icon: const Icon(Icons.calendar_month),
-        label: const Text("Générer le mois"),
+        label: const Text("Générer pour 2 semaines"),
         onPressed: vm.isGenerating
             ? null
             : () => _showPromptDialog(context, vm, 'month'),
@@ -156,10 +156,10 @@ else
                         if ((ex['subType'] ?? '').isNotEmpty) specs.add("Sous-type: ${ex['subType']}");
                         if ((ex['series'] ?? '').isNotEmpty) specs.add("Séries: ${ex['series']}");
                         if ((ex['repetitions'] ?? '').isNotEmpty) specs.add("Répétitions: ${ex['repetitions']}");
-                        if ((ex['duration'] ?? '').isNotEmpty) specs.add("Durée: ${ex['duration']} min");
-                        if ((ex['distance'] ?? '').isNotEmpty) specs.add("Distance: ${ex['distance']} km");
+                        if ((ex['duration'] ?? '').isNotEmpty) specs.add("Durée: ${ex['duration']}");
+                        if ((ex['distance'] ?? '').isNotEmpty) specs.add("Distance: ${ex['distance']}");
                         if ((ex['intensity'] ?? '').isNotEmpty) specs.add("Intensité: ${ex['intensity']}");
-                        if ((ex['restTime'] ?? '').isNotEmpty) specs.add("Repos: ${ex['restTime']} sec");
+                        if ((ex['restTime'] ?? '').isNotEmpty) specs.add("Repos: ${ex['restTime']}");
 
                         return ListTile(
                           contentPadding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
