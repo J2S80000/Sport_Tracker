@@ -5,6 +5,8 @@ import 'package:SportTracker/views/layout_page.dart';
 import 'package:pedometer/pedometer.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:SportTracker/models/exercise_block.dart';
+// home_page.dart
 
 
 int? stepCount;
@@ -102,7 +104,6 @@ void initStepCounter() async {
   _stepCountStream = Pedometer.stepCountStream;
   _stepCountStream!.listen(onStepCount).onError(onStepCountError);
 }
-
 Future<void> updateStepsAndCalories() async {
   final user = FirebaseAuth.instance.currentUser;
   if (user == null) return;
@@ -110,10 +111,14 @@ Future<void> updateStepsAndCalories() async {
   totalStepsToday ??= 0;
 
   final userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
-  final poids = userDoc.data()?['poids'] ?? 60;
+  final poids = (userDoc.data()?['poids'] ?? 60);
   final taille = userDoc.data()?['taille'] ?? 170;
 
-  final caloriesPas = calculateCalories(totalStepsToday!, poids, taille);
+  final caloriesPas = calculateCalories(
+    (totalStepsToday ?? 0).toInt(),
+    poids is int ? poids : int.tryParse(poids.toString()) ?? 60,
+    taille is int ? taille : int.tryParse(taille.toString()) ?? 170,
+  );
 
   final snapshot = await FirebaseFirestore.instance
       .collection('users')
@@ -127,20 +132,22 @@ Future<void> updateStepsAndCalories() async {
     final docRef = program.reference;
     final data = program.data();
 
-    final caloriesExos = data['calories_exercices'] ?? 0;
+    final List exercices = data['exercices'] ?? [];
+    final caloriesExos = calculerCaloriesExercices(
+      exercices,
+      poids: (poids is int ? poids.toDouble() : double.tryParse(poids.toString()) ?? 60.0),
+    );
     final totalCalories = caloriesPas + caloriesExos;
 
-    // ✅ Mise à jour forcée des pas même si déjà présent
     await docRef.update({
-      'pas': totalStepsToday,
+      'pas': (totalStepsToday ?? 0).toInt(),
       'calories_pas': caloriesPas,
       'calories_exercices': caloriesExos,
       'calories': totalCalories,
     });
 
-    print("Programme mis à jour avec $totalStepsToday pas !");
+    print("Programme mis à jour avec $totalStepsToday pas, $caloriesExos kcal exos !");
   } else {
-    // ✅ Création d’un programme auto-généré
     await FirebaseFirestore.instance
         .collection('users')
         .doc(user.uid)
@@ -151,7 +158,7 @@ Future<void> updateStepsAndCalories() async {
       'commentaire': '',
       'jour': todaybd,
       'date': DateTime.now(),
-      'pas': totalStepsToday,
+      'pas': (totalStepsToday ?? 0).toInt(),
       'calories_pas': caloriesPas,
       'calories_exercices': 0,
       'calories': caloriesPas,
@@ -164,7 +171,6 @@ Future<void> updateStepsAndCalories() async {
 
   await fetchTodayProgram();
 }
-
 
 
 
@@ -420,16 +426,16 @@ Widget build(BuildContext context) {
                                           "Répétitions : ${exercice['repetitions']}"),
                                     if ((exercice['duration'] ?? '')
                                         .isNotEmpty)
-                                      Text("Durée : ${exercice['duration']} min"),
+                                      Text("Durée : ${exercice['duration']}"),
                                     if ((exercice['distance'] ?? '')
                                         .isNotEmpty)
-                                      Text("Distance : ${exercice['distance']} km"),
+                                      Text("Distance : ${exercice['distance']}"),
                                     if ((exercice['intensity'] ?? '')
                                         .isNotEmpty)
                                       Text("Intensité : ${exercice['intensity']}"),
                                     if ((exercice['restTime'] ?? '')
                                         .isNotEmpty)
-                                      Text("Repos : ${exercice['restTime']} sec"),
+                                      Text("Repos : ${exercice['restTime']}"),
                                     const SizedBox(height: 10),
                                     Row(
                                       mainAxisAlignment:
@@ -500,5 +506,17 @@ Widget build(BuildContext context) {
               ),
   );
 }
+int calculerCaloriesExercices(List exercices, {required double poids}) {
+  double totalExos = 0;
+  for (final ex in exercices) {
+  if (ex is Map && (ex['accompli'] == true || ex['accompli'] == 1)) {
+    final exercise = ExerciseBlock.fromMap(Map<String, dynamic>.from(ex));
+    totalExos += exercise.estimateCalories(poids: poids);
+  }
+}
+
+  return totalExos.round();
+}
+
 
 }

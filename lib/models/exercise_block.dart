@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+// exercise_block.dart
 
 class ExerciseBlock {
   Map<String, dynamic> toFirestore() {
@@ -12,13 +13,21 @@ class ExerciseBlock {
   /* Helpers de conversion                                              */
   /* ------------------------------------------------------------------ */
 
-  static _secToMin(String raw) {
-    if (raw.trim().isEmpty) return 0;
-    final n = int.tryParse(raw) ?? 0;
-    const _SEC_THRESHOLD = 600; // 10 min => on suppose que c'est en s
-    return n > _SEC_THRESHOLD ? (n / 60).round() : n;
-    // renvoie toujours des min
+static int _secToMin(String raw, {String? type}) {
+  if (raw.trim().isEmpty) return 0;
+  final n = int.tryParse(raw) ?? 0;
+  const _SEC_THRESHOLD = 600; // 10 min => on suppose que c'est en secondes
+
+  // Si type = Shadow Boxing, toujours prendre comme minutes (même pour n <= 20)
+  if (type != null && type.toLowerCase().contains('shadow boxing')) {
+    return n;
   }
+
+  // Pour les autres, <= 20 => secondes, à convertir
+  if (n <= 20) return (n / 60).round();
+  if (n > _SEC_THRESHOLD) return (n / 60).round();
+  return n; // Sinon minutes
+}
 
   String type = 'Shadow Boxing';
   String subType = '';
@@ -89,44 +98,58 @@ class ExerciseBlock {
       return baseMET;
   }
 }
-
 int _getDurationEstimate() {
-  final int? parsedDuration = int.tryParse(duration);
-  if (parsedDuration != null && parsedDuration > 0) return parsedDuration;
+  print('DEBUG raw duration for $type - $subType : "$duration"');
+
+  final regExp = RegExp(r'(\d+)');
+  final match = regExp.firstMatch(duration);
+  if (match != null) {
+    final value = match.group(0);
+    final int? parsedDuration = int.tryParse(value!);
+    print('DEBUG extracted duration value: $parsedDuration');
+    if (parsedDuration != null && parsedDuration > 0) return parsedDuration;
+  }
 
   final int? reps = int.tryParse(repetitions);
   if (reps != null && reps > 0) {
+    print('DEBUG using reps for duration: $reps');
     // Hypothèse : 10 reps ≈ 1 min
     return (reps / 10).ceil();
   }
 
+  print('DEBUG echecs valeurs par défaut pour $type - $subType');
   return 1; // Valeur par défaut
 }
 
 double estimateCalories({required double poids}) {
   final met = _getMET(type, subType, intensity);
   final durationMin = _getDurationEstimate();
+  int seriesCount = 1;
+  if (series.trim().isNotEmpty) {
+    seriesCount = int.tryParse(series) ?? 1;
+    if (seriesCount < 1) seriesCount = 1;
+  }
+  final totalMinutes = durationMin * seriesCount;
 
-  // Formule classique : calories = MET × poids × durée (en heures)
-  return met * poids * (durationMin / 60);
+  print('DEBUG [$type - $subType] - MET: $met, Durée: $durationMin, Séries: $seriesCount, TotalMinutes: $totalMinutes, Poids: $poids');
+
+  return met * poids * (totalMinutes / 60);
+}
+factory ExerciseBlock.fromMap(Map<String, dynamic> map) {
+  final block = ExerciseBlock();
+  block.type = map['type'] ?? block.type;
+  block.subType = map['subType'] ?? '';
+  block.duration = map['duration']?.toString() ?? '';
+  block.distance = map['distance'] ?? '';
+  block.repetitions = map['repetitions'] ?? '';
+  block.intensity = _normalizeIntensity(map['intensity'] ?? 'Moderee');
+  block.restTime = map['restTime'] ?? '';
+  block.series = map['series'] ?? '';
+  block.weight = map['weight'] ?? '';
+  block.accompli = map['accompli'] ?? false;
+  return block;
 }
 
-  factory ExerciseBlock.fromMap(Map<String, dynamic> map) {
-    final block = ExerciseBlock();
-    block.type = map['type'] ?? block.type;
-    block.subType = map['subType'] ?? '';
-    block.duration = (map['duration']?.toString().isNotEmpty ?? false)
-    ? _secToMin(map['duration'].toString()).toString()
-    : '0';
-    block.distance = map['distance'] ?? '';
-    block.repetitions = map['repetitions'] ?? '';
-    block.intensity = _normalizeIntensity(map['intensity'] ?? 'Moderee');
-    block.restTime = map['restTime'] ?? '';
-    block.series = map['series'] ?? '';
-    block.weight = map['weight'] ?? '';
-    block.accompli = map['accompli'] ?? false;
-    return block;
-  }
 
   Map<String, dynamic> toMap() => {
         'type': type,
