@@ -294,21 +294,23 @@ Widget build(BuildContext context) {
                                       style: const TextStyle(fontSize: 20)),
                                 ],
                               ),
-                              Column(
-                                children: [
-                                  const Text("Calories brûlées",
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold)),
-                                  Text(
-                                    '${(programData?['calories_pas'] ?? 0) + (programData?['calories_exercices'] ?? 0)} kcal',
-                                    style: const TextStyle(fontSize: 20),
-                                  ),
-                                  Text(
-                                      "Pas : ${programData?['calories_pas'] ?? 0} kcal"),
-                                  Text(
-                                      "Exos : ${programData?['calories_exercices'] ?? 0} kcal"),
-                                ],
-                              ),
+                          Column(
+  children: [
+    const Text("Calories brûlées",
+        style: TextStyle(fontWeight: FontWeight.bold)),
+    Text(
+      '${(programData?['calories_pas'] ?? 0) + (programData?['calories_exercices'] ?? 0)} kcal',
+      style: const TextStyle(fontSize: 20),
+    ),
+    Text(
+      "👟 : ${programData?['calories_pas'] ?? 0} kcal"
+    ),
+    Text(
+      "Exos : ${programData?['calories_exercices'] ?? 0} kcal"
+    ),
+  ],
+)
+
                             ],
                           ),
                         ),

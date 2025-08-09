@@ -3,15 +3,74 @@ import 'package:flutter/material.dart';
 
 class ExerciseBlock {
   Map<String, dynamic> toFirestore() {
-    // Supprime les cles ou la valeur est vide
-    final m = toMap();
-    m.removeWhere((k, v) => v == null || (v is String && v.trim().isEmpty));
-    return m;
+  final m = toMap();
+  m.removeWhere((k, v) => v == null || (v is String && v.trim().isEmpty));
+  return m;
+}
+  
+ static String _normalize(String s) {
+  // enlève les accents et met en minuscule (sans dépendance externe)
+  const Map<String, String> rep = {
+    'à':'a','á':'a','â':'a','ä':'a','ã':'a','å':'a','ā':'a',
+    'ç':'c',
+    'è':'e','é':'e','ê':'e','ë':'e','ē':'e',
+    'ì':'i','í':'i','î':'i','ï':'i','ī':'i',
+    'ñ':'n',
+    'ò':'o','ó':'o','ô':'o','ö':'o','õ':'o','ō':'o',
+    'ù':'u','ú':'u','û':'u','ü':'u','ū':'u',
+    'ÿ':'y',
+    'À':'a','Á':'a','Â':'a','Ä':'a','Ã':'a','Å':'a','Ā':'a',
+    'Ç':'c',
+    'È':'e','É':'e','Ê':'e','Ë':'e','Ē':'e',
+    'Ì':'i','Í':'i','Î':'i','Ï':'i','Ī':'i',
+    'Ñ':'n',
+    'Ò':'o','Ó':'o','Ô':'o','Ö':'o','Õ':'o','Ō':'o',
+    'Ù':'u','Ú':'u','Û':'u','Ü':'u','Ū':'u',
+    'Ÿ':'y'
+  };
+  final sb = StringBuffer();
+  for (final ch in s.trim().runes) {
+    final c = String.fromCharCode(ch);
+    sb.write(rep[c] ?? c.toLowerCase());
   }
-
+  return sb.toString();
+}
   /* ------------------------------------------------------------------ */
   /* Helpers de conversion                                              */
   /* ------------------------------------------------------------------ */
+  int _estimateMinutesFromDistance(String type, String intensity, String distance) {
+  final t = _normalize(type);
+  final i = _normalize(intensity);
+
+  final meters = _parseDistanceMeters(distance);
+  if (meters <= 0) return 0;
+
+  double paceMinPerKm;
+  if (t == 'course' || t == 'cardio libre') {
+    switch (i) {
+      case 'faible':   paceMinPerKm = 7.0;  break;
+      case 'elevee':   paceMinPerKm = 4.5;  break;
+      default:         paceMinPerKm = 5.5;  break;
+    }
+  } else {
+    paceMinPerKm = 6.0;
+  }
+
+  final km = meters / 1000.0;
+  return (km * paceMinPerKm).ceil();
+}
+int _parseDistanceMeters(String distance) {
+  final s = distance.toLowerCase().replaceAll(' ', '');
+  final kmMatch = RegExp(r'([\d\.]+)km').firstMatch(s);
+  if (kmMatch != null) {
+    return (double.parse(kmMatch.group(1)!) * 1000).round();
+  }
+  final mMatch = RegExp(r'(\d+)m').firstMatch(s);
+  if (mMatch != null) return int.parse(mMatch.group(1)!);
+  final plain = RegExp(r'^\d+$').firstMatch(s);
+  if (plain != null) return int.parse(plain.group(0)!);
+  return 0;
+}
 
 static int _secToMin(String raw, {String? type}) {
   if (raw.trim().isEmpty) return 0;
@@ -67,58 +126,44 @@ static int _secToMin(String raw, {String? type}) {
   }
 
   static double _getMET(String type, String subType, String intensity) {
+  final t = _normalize(type);
+  final i = _normalize(intensity);
   double baseMET;
 
-  switch (type.toLowerCase()) {
-    case 'cardio libre':
-    case 'course':
-    case 'shadow boxing':
-      baseMET = 6.0;
-      break;
-    case 'renfo avec charges':
-    case 'street workout':
-      baseMET = 5.0;
-      break;
-    case 'plyometrie':
-      baseMET = 7.0;
-      break;
-    case 'repos actif':
-      baseMET = 2.0;
-      break;
-    default:
-      baseMET = 4.0;
+  switch (t) {
+    case 'course':              baseMET = 8.5; break;
+    case 'cardio libre':        baseMET = 6.0; break;
+    case 'shadow boxing':       baseMET = 7.0; break;
+    case 'renfo avec charges':  baseMET = 5.0; break;
+    case 'street workout':      baseMET = 5.5; break;
+    case 'plyometrie':          baseMET = 8.0; break;
+    case 'repos actif':         baseMET = 2.0; break;
+    default:                    baseMET = 4.0;
   }
 
-  switch (intensity.toLowerCase()) {
-    case 'faible':
-      return baseMET * 0.8;
-    case 'elevee':
-      return baseMET * 1.2;
-    default:
-      return baseMET;
+  switch (i) {
+    case 'faible':  return baseMET * 0.85;
+    case 'elevee':  return baseMET * 1.25;
+    default:        return baseMET;
   }
 }
 int _getDurationEstimate() {
-  print('DEBUG raw duration for $type - $subType : "$duration"');
-
   final regExp = RegExp(r'(\d+)');
   final match = regExp.firstMatch(duration);
   if (match != null) {
-    final value = match.group(0);
-    final int? parsedDuration = int.tryParse(value!);
-    print('DEBUG extracted duration value: $parsedDuration');
-    if (parsedDuration != null && parsedDuration > 0) return parsedDuration;
+    final int? parsed = int.tryParse(match.group(0)!);
+    if (parsed != null && parsed > 0) return parsed;
   }
 
   final int? reps = int.tryParse(repetitions);
-  if (reps != null && reps > 0) {
-    print('DEBUG using reps for duration: $reps');
-    // Hypothèse : 10 reps ≈ 1 min
-    return (reps / 10).ceil();
+  if (reps != null && reps > 0) return (reps / 10).ceil();
+
+  if (distance.trim().isNotEmpty) {
+    final mins = _estimateMinutesFromDistance(type, intensity, distance);
+    if (mins > 0) return mins;
   }
 
-  print('DEBUG echecs valeurs par défaut pour $type - $subType');
-  return 1; // Valeur par défaut
+  return 1;
 }
 
 double estimateCalories({required double poids}) {
