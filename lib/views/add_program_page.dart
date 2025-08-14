@@ -9,6 +9,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:convert';
 import '../models/exercise_card.dart';
 import 'package:http/http.dart' as http;
+import 'package:easy_localization/easy_localization.dart';
 
 class AddProgramPage extends StatelessWidget {
   final DateTime? initialDate;
@@ -39,19 +40,15 @@ class AddProgramPage extends StatelessWidget {
       },
       child: Consumer<AddProgramViewModel>(
         builder: (context, vm, _) => Scaffold(
-          appBar: AppBar(title: const Text("Ajouter un programme")),
+          appBar: AppBar(title: Text(tr('add_program'))),
           body: Padding(
             padding: const EdgeInsets.all(16),
             child: ListView(
               children: [
                 TextFormField(
                   readOnly: true,
-                  decoration: const InputDecoration(labelText: "Date du programme"),
-                  controller: TextEditingController(
-                    text: "${vm.selectedDate.day}/${vm.selectedDate.month}/${vm.selectedDate.year}",
-                  )..selection = TextSelection.fromPosition(
-                    TextPosition(offset: "${vm.selectedDate.day}/${vm.selectedDate.month}/${vm.selectedDate.year}".length),
-                  ),
+                  decoration: InputDecoration(labelText: tr('program_date')),
+                  controller: vm.dateController, // ✅ UTILISEZ LE CONTRÔLEUR DU VIEWMODEL
                   onTap: () async {
                     final picked = await showDatePicker(
                       context: context,
@@ -67,22 +64,22 @@ class AddProgramPage extends StatelessWidget {
                 ),
                 TextFormField(
                   controller: vm.programNameController,
-                  decoration: const InputDecoration(labelText: "Nom du programme"),
+                  decoration: InputDecoration(labelText: tr('program_name')),
                 ),
                 TextFormField(
                   controller: vm.commentController,
-                  decoration: const InputDecoration(labelText: "Commentaire global (optionnel)"),
+                  decoration: InputDecoration(labelText: tr('global_comment')),
                 ),
                 TextFormField(
                   controller: _promptController,
-                  decoration: const InputDecoration(
-                    labelText: "Demande personnalisée à l'IA",
-                    hintText: "Ex : crée un programme de remise en forme pour débutant",
+                  decoration: InputDecoration(
+                    labelText: tr('custom_ai_prompt'),
+                    hintText: tr('custom_ai_prompt_hint'),
                   ),
                   maxLines: 3,
                 ),
                 const SizedBox(height: 20),
-                const Text("Exercices :", style: TextStyle(fontWeight: FontWeight.bold)),
+                Text(tr('exercises'), style: const TextStyle(fontWeight: FontWeight.bold)),
                 ...vm.exercises.asMap().entries.map((entry) {
                   final index = entry.key;
                   final exercise = entry.value;
@@ -106,12 +103,12 @@ class AddProgramPage extends StatelessWidget {
                                 ),
                               )
                             : const Icon(Icons.flash_on),
-                        label: Text(vm.isGenerating ? "Génération en cours..." : "Générer avec l'IA"),
+                        label: Text(vm.isGenerating ? tr('generating') : tr('generate_with_ai')),
                         onPressed: vm.isGenerating ? null : () async {
                           final objectif = _promptController.text.trim();
                           if (objectif.isEmpty) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Veuillez saisir un objectif.')),
+                              SnackBar(content: Text(tr('objective_required'))),
                             );
                             return;
                           }
@@ -129,7 +126,7 @@ class AddProgramPage extends StatelessWidget {
                             );
                             if (resp.statusCode != 200) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('Erreur réseau : ${resp.statusCode}')),
+                                SnackBar(content: Text(tr('network_error', args: [resp.statusCode.toString()]))),
                               );
                               return;
                             }
@@ -148,15 +145,15 @@ class AddProgramPage extends StatelessWidget {
                               vm.notifyListeners();
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: Text('✅ Programme généré avec ${vm.exercises.length} exercices !'),
+                                  content: Text(tr('program_generated', args: [vm.exercises.length.toString()])),
                                   backgroundColor: Colors.green,
                                   behavior: SnackBarBehavior.floating,
                                 ),
                               );
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('⚠️ Aucun exercice généré par l\'IA'),
+                                SnackBar(
+                                  content: Text(tr('no_exercise_generated')),
                                   backgroundColor: Colors.orange,
                                   behavior: SnackBarBehavior.floating,
                                 ),
@@ -165,7 +162,7 @@ class AddProgramPage extends StatelessWidget {
                           } catch (e) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                content: Text('❌ Erreur lors de la génération : $e'),
+                                content: Text(tr('generation_error', args: [e.toString()])),
                                 backgroundColor: Colors.red,
                                 behavior: SnackBarBehavior.floating,
                               ),
@@ -180,7 +177,7 @@ class AddProgramPage extends StatelessWidget {
                     Expanded(
                       child: ElevatedButton.icon(
                         icon: const Icon(Icons.add),
-                        label: const Text("Ajouter un exercice"),
+                        label: Text(tr('add_exercise')),
                         onPressed: vm.addExercise,
                       ),
                     ),
@@ -189,46 +186,45 @@ class AddProgramPage extends StatelessWidget {
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () async {
-  final user = FirebaseAuth.instance.currentUser;
-  if (user == null) return;
+                    final user = FirebaseAuth.instance.currentUser;
+                    if (user == null) return;
 
-  // Récupération du poids
-  final userDoc = await FirebaseFirestore.instance
-      .collection('users')
-      .doc(user.uid)
-      .get();
-  final poids = (userDoc.data()?['poids'] ?? 70).toDouble();
+                    // Récupération du poids
+                    final userDoc = await FirebaseFirestore.instance
+                        .collection('users')
+                        .doc(user.uid)
+                        .get();
+                    final poids = (userDoc.data()?['poids'] ?? 70).toDouble();
 
-  // Calcul des calories
-  final totalCalories = await _calculateTotalCalories(vm.exercises, poids);
+                    // Calcul des calories
+                    final totalCalories = await _calculateTotalCalories(vm.exercises, poids);
 
-  // Format de la date : "2025-07-21"
-  final jourFormatted = "${vm.selectedDate.year.toString().padLeft(4, '0')}-"
-                        "${vm.selectedDate.month.toString().padLeft(2, '0')}-"
-                        "${vm.selectedDate.day.toString().padLeft(2, '0')}";
+                    // Format de la date : "2025-07-21"
+                    final jourFormatted = "${vm.selectedDate.year.toString().padLeft(4, '0')}-"
+                                          "${vm.selectedDate.month.toString().padLeft(2, '0')}-"
+                                          "${vm.selectedDate.day.toString().padLeft(2, '0')}";
 
-  // Enregistrement dans Firestore
-await FirebaseFirestore.instance
-    .collection('users')
-    .doc(user.uid)
-    .collection('programmes')
-    .doc(jourFormatted) // ← ID personnalisé : "2025-07-26"
-    .set({
-      'uid': user.uid,
-      'nom': vm.programNameController.text,
-      'commentaire': vm.commentController.text,
-      'date': vm.selectedDate,
-      'jour': jourFormatted,
-      'calories_pas': 0, // sera mis à jour par HomePage ensuite
-      'calories_exercices': totalCalories.round(),
-      'calories': totalCalories.round(), // total initial = exercices
-      'exercices': vm.exercises.map((e) => e.toFirestore()).toList(),
-    });
+                    // Enregistrement dans Firestore
+                    await FirebaseFirestore.instance
+                        .collection('users')
+                        .doc(user.uid)
+                        .collection('programmes')
+                        .doc(jourFormatted) // ← ID personnalisé : "2025-07-26"
+                        .set({
+                          'uid': user.uid,
+                          'nom': vm.programNameController.text,
+                          'commentaire': vm.commentController.text,
+                          'date': vm.selectedDate,
+                          'jour': jourFormatted,
+                          'calories_pas': 0, // sera mis à jour par HomePage ensuite
+                          'calories_exercices': totalCalories.round(),
+                          'calories': totalCalories.round(), // total initial = exercices
+                          'exercices': vm.exercises.map((e) => e.toFirestore()).toList(),
+                        });
 
-  Navigator.pop(context);
-},
-
-                  child: const Text("✅ Enregistrer le programme"),
+                    Navigator.pop(context);
+                  },
+                  child: Text(tr('save_program')),
                 ),
               ],
             ),

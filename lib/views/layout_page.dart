@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class LayoutPage extends StatelessWidget {
   final String title;
@@ -52,11 +53,21 @@ class _SettingsDialogState extends State<_SettingsDialog> {
   final _tailleController = TextEditingController();
   bool isLoading = false;
 
+  Locale? _selectedLocale;
+
   @override
   void initState() {
     super.initState();
     _loadUserData();
   }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _selectedLocale ??= context.locale;
+  }
+
+  // ... reste du code inchangé ...
 
   Future<void> _loadUserData() async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
@@ -72,10 +83,10 @@ class _SettingsDialogState extends State<_SettingsDialog> {
     if (uid == null) return;
 
     final poids = double.tryParse(_poidsController.text)?.round();
-final taille = double.tryParse(_tailleController.text)?.round();
+    final taille = double.tryParse(_tailleController.text)?.round();
     if (poids == null || taille == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Valeurs invalides")),
+        SnackBar(content: Text(tr("invalid_values"))),
       );
       return;
     }
@@ -91,29 +102,57 @@ final taille = double.tryParse(_tailleController.text)?.round();
     Navigator.pop(context);
   }
 
+  void _changeLanguage(Locale locale) {
+    setState(() {
+      _selectedLocale = locale;
+    });
+    context.setLocale(locale);
+  }
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text("Paramètres"),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          TextField(
-            controller: _poidsController,
-            keyboardType: TextInputType.number,
-            decoration: const InputDecoration(labelText: "Poids (kg)"),
-          ),
-          TextField(
-            controller: _tailleController,
-            keyboardType: TextInputType.number,
-            decoration: const InputDecoration(labelText: "Taille (cm)"),
-          ),
-        ],
+      title: Text(tr("settings")),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: _poidsController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(labelText: tr("weight_kg")),
+            ),
+            TextField(
+              controller: _tailleController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(labelText: tr("height_cm")),
+            ),
+            const SizedBox(height: 20),
+            DropdownButton<Locale>(
+              value: _selectedLocale,
+              onChanged: (Locale? locale) {
+                if (locale != null) {
+                  _changeLanguage(locale);
+                }
+              },
+              items: const [
+                DropdownMenuItem(
+                  value: Locale('fr'),
+                  child: Text('Français'),
+                ),
+                DropdownMenuItem(
+                  value: Locale('en'),
+                  child: Text('English'),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
       actions: [
         TextButton(
           onPressed: isLoading ? null : () => Navigator.pop(context),
-          child: const Text("Annuler"),
+          child: Text(tr("cancel")),
         ),
         ElevatedButton(
           onPressed: isLoading ? null : _save,
@@ -123,7 +162,7 @@ final taille = double.tryParse(_tailleController.text)?.round();
                   width: 16,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
-              : const Text("Enregistrer"),
+              : Text(tr("save")),
         ),
       ],
     );

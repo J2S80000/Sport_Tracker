@@ -1,6 +1,8 @@
 // File: lib/widgets/exercise_card.dart
 import 'package:flutter/material.dart';
 import '../models/exercise_block.dart';
+import 'package:easy_localization/easy_localization.dart';
+
 
 class ExerciseCard extends StatefulWidget {
   final ExerciseBlock block;
@@ -21,6 +23,7 @@ class ExerciseCard extends StatefulWidget {
 class _ExerciseCardState extends State<ExerciseCard> {
   
   ExerciseBlock get b => widget.block;
+  
 
   @override
   Widget build(BuildContext context) {
@@ -52,14 +55,16 @@ class _ExerciseCardState extends State<ExerciseCard> {
             const SizedBox(height: 8),
             
             DropdownButtonFormField<String>(
-              value: b.type,
+              value: b.type, // Doit être une clé, ex: "squat_barre"
               decoration: const InputDecoration(labelText: "Type d'exercice"),
               items: ExerciseBlock.subTypeOptions.keys
-                  .map((t) => DropdownMenuItem(value: t, child: Text(t)))
+                  .map((t) => DropdownMenuItem(
+                    value: t, // La clé !
+                    child: Text(tr(t)), // Affichage traduit
+                  ))
                   .toList(),
               onChanged: (val) => setState(() {
                 b.type = val!;
-                // reset champs dépendants
                 b
                   ..subType = ''
                   ..duration = ''
@@ -75,7 +80,10 @@ class _ExerciseCardState extends State<ExerciseCard> {
                 value: b.subType.isEmpty ? null : b.subType,
                 decoration: const InputDecoration(labelText: "Sous-type"),
                 items: ExerciseBlock.subTypeOptions[b.type]!
-                    .map((s) => DropdownMenuItem(value: s, child: Text(s)))
+                    .map((s) => DropdownMenuItem(
+                      value: s, // La clé !
+                      child: Text(tr(s)), // Affichage traduit
+                    ))
                     .toList(),
                 onChanged: (val) => setState(() => b.subType = val!),
               ),
@@ -145,8 +153,10 @@ class _ExerciseCardState extends State<ExerciseCard> {
                 value: b.intensity,
                 decoration: const InputDecoration(labelText: "Intensité"),
                 items: ExerciseBlock.intensityOptions
-                    .toSet()  // ✅ enlève tous les doublons
-                    .map((i) => DropdownMenuItem(value: i, child: Text(i)))
+                    .map((i) => DropdownMenuItem(
+                      value: i, // La clé !
+                      child: Text(tr(i)), // Affichage traduit
+                    ))
                     .toList(),
                 onChanged: (val) => setState(() => b.intensity = val!),
               ),

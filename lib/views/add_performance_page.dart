@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:SportTracker/models/performanceview.dart';
@@ -16,7 +17,7 @@ class AddPerformancePage extends StatelessWidget {
           final subType = vm.model.subType;
 
           return Scaffold(
-            appBar: AppBar(title: const Text("Ajouter une performance")),
+            appBar: AppBar(title: Text(tr('add_performance'))),
             body: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Form(
@@ -26,7 +27,7 @@ class AddPerformancePage extends StatelessWidget {
                     children: [
                       DropdownButtonFormField<String>(
                         value: type,
-                        decoration: const InputDecoration(labelText: "Type d'exercice"),
+                        decoration: InputDecoration(labelText: tr('exercise_type')),
                         items: vm.subTypeOptions.keys
                             .map((e) => DropdownMenuItem(value: e, child: Text(e)))
                             .toList(),
@@ -36,7 +37,7 @@ class AddPerformancePage extends StatelessWidget {
                       if (vm.subTypeOptions[type]!.isNotEmpty)
                         DropdownButtonFormField<String>(
                           value: subType.isEmpty ? null : subType,
-                          decoration: const InputDecoration(labelText: "Sous-type"),
+                          decoration: InputDecoration(labelText: tr('sub_type')),
                           items: vm.subTypeOptions[type]!
                               .map((e) => DropdownMenuItem(value: e, child: Text(e)))
                               .toList(),
@@ -46,7 +47,7 @@ class AddPerformancePage extends StatelessWidget {
                       // Répétitions : Street Workout, Plyométrie, Renfo avec charges
                       if ((type == 'Street Workout' || type == 'Plyometrie' || type == 'Renfo avec charges') && subType.isNotEmpty)
                         TextFormField(
-                          decoration: InputDecoration(labelText: "Nombre de répétitions pour $subType"),
+                          decoration: InputDecoration(labelText: tr('repetitions_for', args: [subType])),
                           keyboardType: TextInputType.number,
                           onChanged: (val) => vm.updateField(repetitions: val),
                         ),
@@ -54,7 +55,7 @@ class AddPerformancePage extends StatelessWidget {
                       // Distance : Course
                       if (type == 'Course')
                         TextFormField(
-                          decoration: const InputDecoration(labelText: "Distance (en km)"),
+                          decoration: InputDecoration(labelText: tr('distance_km')),
                           keyboardType: TextInputType.number,
                           onChanged: (val) => vm.updateField(distance: val),
                         ),
@@ -66,7 +67,7 @@ class AddPerformancePage extends StatelessWidget {
                           type == 'Shadow Boxing' ||
                           type == 'Cardio libre')
                         TextFormField(
-                          decoration: const InputDecoration(labelText: "Nombre de séries"),
+                          decoration: InputDecoration(labelText: tr('series_count')),
                           keyboardType: TextInputType.number,
                           onChanged: (val) => vm.updateField(series: val),
                         ),
@@ -77,7 +78,7 @@ class AddPerformancePage extends StatelessWidget {
                           type == 'Cardio libre' ||
                           type == 'Repos actif')
                         TextFormField(
-                          decoration: const InputDecoration(labelText: "Durée (en minutes)"),
+                          decoration: InputDecoration(labelText: tr('duration_min')),
                           keyboardType: TextInputType.number,
                           onChanged: (val) => vm.updateField(duration: val),
                         ),
@@ -85,7 +86,7 @@ class AddPerformancePage extends StatelessWidget {
                       // Poids : Renfo avec charges
                       if (type == 'Renfo avec charges' && subType.isNotEmpty)
                         TextFormField(
-                          decoration: const InputDecoration(labelText: "Poids (en kg)"),
+                          decoration: InputDecoration(labelText: tr('weight_kg')),
                           keyboardType: TextInputType.number,
                           onChanged: (val) => vm.updateField(weight: val),
                         ),
@@ -94,7 +95,7 @@ class AddPerformancePage extends StatelessWidget {
                       if (type != 'Repos actif')
                         DropdownButtonFormField<String>(
                           value: vm.model.intensity.isEmpty ? null : vm.model.intensity,
-                          decoration: const InputDecoration(labelText: "Intensité"),
+                          decoration: InputDecoration(labelText: tr('intensity')),
                           items: vm.intensityOptions
                               .map((e) => DropdownMenuItem(value: e, child: Text(e)))
                               .toList(),
@@ -103,14 +104,14 @@ class AddPerformancePage extends StatelessWidget {
 
                       // Repos : tous
                       TextFormField(
-                        decoration: const InputDecoration(labelText: "Repos après l'exercice (en sec)"),
+                        decoration: InputDecoration(labelText: tr('rest_after_exercise')),
                         keyboardType: TextInputType.number,
                         onChanged: (val) => vm.updateField(restTime: val),
                       ),
 
                       // Commentaire
                       TextFormField(
-                        decoration: const InputDecoration(labelText: "Commentaire"),
+                        decoration: InputDecoration(labelText: tr('comment')),
                         onChanged: (val) => vm.updateField(commentaire: val),
                       ),
 
@@ -121,11 +122,13 @@ class AddPerformancePage extends StatelessWidget {
                           onPressed: () async {
                             final result = await vm.submitPerformance(context);
                             if (result != null) {
-                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(result)));
+                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(tr('performance_saved'))));
                               if (result.startsWith('✅')) Navigator.pop(context);
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(tr('performance_error'))));
                             }
                           },
-                          child: const Text("Enregistrer"),
+                          child: Text(tr('save_performance')),
                         ),
                       ),
                     ],

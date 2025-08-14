@@ -10,13 +10,23 @@ import 'package:SportTracker/views/history_page.dart';
 import 'package:SportTracker/views/login_page.dart';
 import 'package:SportTracker/views/add_something_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const MainApp());
+  await EasyLocalization.ensureInitialized();
+
+  runApp(
+    EasyLocalization(
+      supportedLocales: const [Locale('fr'), Locale('en')],
+      path: 'assets/langs', // assure-toi que ce dossier existe et contient tes fichiers JSON
+      fallbackLocale: const Locale('fr'),
+      child: const MainApp(),
+    ),
+  );
 }
 
 class MainApp extends StatefulWidget {
@@ -30,10 +40,10 @@ class _MainAppState extends State<MainApp> {
   int _selectedIndex = 1;
 
   final List<Widget> _pages = [
-    AddSomethingPage(),
-    HomePage(),
-    HistoryPage(),
-    CaalendarPage(),
+    const AddSomethingPage(),
+    const HomePage(),
+    const HistoryPage(),
+    const CaalendarPage(),
   ];
 
   void _onItemTapped(int index) {
@@ -46,6 +56,9 @@ class _MainAppState extends State<MainApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      localizationsDelegates: context.localizationDelegates,
+      supportedLocales: context.supportedLocales,
+      locale: context.locale,
       themeMode: ThemeMode.system,
       theme: ThemeData(
         brightness: Brightness.light,
@@ -98,7 +111,7 @@ class _MainAppState extends State<MainApp> {
             );
           }
 
-          if (!snapshot.hasData || snapshot.data == null) {
+          if (!snapshot.hasData) {
             return const LoginPage();
           }
 
@@ -124,22 +137,22 @@ class _MainAppState extends State<MainApp> {
                   bottomNavigationBar: BottomNavigationBar(
                     currentIndex: _selectedIndex,
                     onTap: _onItemTapped,
-                    items: const [
+                    items: [
                       BottomNavigationBarItem(
-                        icon: Icon(Icons.add_circle_outline),
-                        label: 'Ajouter',
+                        icon: const Icon(Icons.add_circle_outline),
+                        label: tr('add'),
                       ),
                       BottomNavigationBarItem(
-                        icon: Icon(Icons.home),
-                        label: 'Accueil',
+                        icon: const Icon(Icons.home),
+                        label: tr('home'),
                       ),
                       BottomNavigationBarItem(
-                        icon: Icon(Icons.bar_chart),
-                        label: 'Données',
+                        icon: const Icon(Icons.bar_chart),
+                        label: tr('data'),
                       ),
                       BottomNavigationBarItem(
-                        icon: Icon(Icons.date_range),
-                        label: 'Calendrier',
+                        icon: const Icon(Icons.date_range),
+                        label: tr('calendar'),
                       ),
                     ],
                   ),

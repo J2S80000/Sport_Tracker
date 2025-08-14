@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../models/aggregated_data_point.dart';
 import '../viewmodels/history_view_model.dart';
 
@@ -14,7 +15,7 @@ class HistoryPage extends StatelessWidget {
       create: (_) => HistoryViewModel()..loadData(),
       child: Consumer<HistoryViewModel>(
         builder: (context, vm, _) => Scaffold(
-          appBar: AppBar(title: const Text("Historique des performances")),
+          appBar: AppBar(title: Text(tr('history'))),
           body: Padding(
             padding: const EdgeInsets.all(12.0),
             child: Column(
@@ -59,7 +60,7 @@ class HistoryPage extends StatelessWidget {
     Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        const Text("Uniquement accomplis"),
+        Text(tr('only_completed')),
         Switch(value: vm.onlyCompleted, onChanged: vm.toggleCompleted),
       ],
     ),
@@ -68,7 +69,7 @@ class HistoryPage extends StatelessWidget {
                 const SizedBox(height: 10),
                 Expanded(
                   child: vm.dataPoints.isEmpty
-                      ? const Center(child: Text("Aucune donnée trouvée"))
+                      ? Center(child: Text(tr('no_data_found')))
                       : Column(
                           children: [
                             SizedBox(
@@ -135,11 +136,11 @@ class HistoryPage extends StatelessWidget {
 
                   if (vm.selectedPeriod == 'Jour') {
                     return ListTile(
-                      title: Text("${p.label} - Intensité : ${p.avgIntensity.toStringAsFixed(2)}"),
+                      title: Text("${p.label} - ${tr('intensity', args: [p.avgIntensity.toStringAsFixed(2)])}"),
 subtitle: Column(
   crossAxisAlignment: CrossAxisAlignment.start,
   children: [
-    Text("Exercice : ${p.type} ${p.subType}"),
+    Text(tr('exercise', args: [p.type, p.subType])),
 
     if ([
       'Street Workout',
@@ -148,7 +149,7 @@ subtitle: Column(
       'Shadow Boxing',
       'Cardio libre'
     ].contains(p.type) && p.series != null)
-      Text("Séries : ${p.series}"),
+      Text(tr('series', args: [p.series.toString()])),
 
     if ([
       'Course',
@@ -156,26 +157,26 @@ subtitle: Column(
       'Cardio libre',
       'Repos actif'
     ].contains(p.type) && p.duration != null)
-      Text("Durée : ${p.duration} min"),
+      Text(tr('duration', args: [p.duration.toString()])),
 
     if (p.type == 'Renfo avec charges' && p.weight != null)
-      Text("Poids : ${p.weight} kg"),
+      Text(tr('weight', args: [p.weight.toString()])),
 
     if (p.rest != null)
-      Text("Repos : ${p.rest} sec"),
+      Text(tr('rest', args: [p.rest.toString()])),
 
     if (p.nom.isNotEmpty || p.commentaire.isNotEmpty)
-      Text("Programme : ${p.nom} • ${p.commentaire}"),
+      Text(tr('program', args: [p.nom, p.commentaire])),
 
     if (p.totalCalories != null)
-      Text("🔥 Calories brûlées : ${p.totalCalories!.round()} kcal"),
+      Text(tr('calories_burned_value', args: [p.totalCalories!.round().toString()]))
   ],
 ),
                     );
                   } else {
                     return ListTile(
-                      title: Text("${p.label} - Moy. intensité : ${p.avgIntensity.toStringAsFixed(2)}"),
-                      subtitle: Text("${p.count} programme(s) effectué(s)"),
+                      title: Text("${p.label} - ${tr('avg_intensity', args: [p.avgIntensity.toStringAsFixed(2)])}"),
+                      subtitle: Text(tr('programs_done', args: [p.count.toString()])),
                     );
                   }
                 },

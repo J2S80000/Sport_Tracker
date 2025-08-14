@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'add_performance_page.dart';
 import 'add_program_page.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class AddSomethingPage extends StatelessWidget {
   const AddSomethingPage({super.key});
@@ -8,14 +9,14 @@ class AddSomethingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Ajouter")),
+      appBar: AppBar(title: Text(tr('add_something'))),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ElevatedButton.icon(
               icon: const Icon(Icons.directions_run),
-              label: const Text("Ajouter une performance"),
+              label: Text(tr('add_performance')),
               onPressed: () {
                 Navigator.push(
                   context,
@@ -28,8 +29,9 @@ class AddSomethingPage extends StatelessWidget {
             const SizedBox(height: 20),
             ElevatedButton.icon(
               icon: const Icon(Icons.fitness_center),
-              label: const Text("Ajouter un programme d'entraînement"),
-              onPressed: () {Navigator.push(
+              label: Text(tr('add_training_program')),
+              onPressed: () {
+                Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => AddProgramPage(),

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -12,7 +13,7 @@ class CaalendarPage extends StatelessWidget {
       create: (_) => CalendarViewModel()..loadCalendarColors(),
       child: Consumer<CalendarViewModel>(
         builder: (context, vm, _) => Scaffold(
-          appBar: AppBar(title: const Text("Suivi calendrier")),
+          appBar: AppBar(title: Text(tr('calendar_tracking'))),
           body: SingleChildScrollView(
             padding: const EdgeInsets.all(12.0),
             child: Column(
@@ -78,10 +79,10 @@ class CaalendarPage extends StatelessWidget {
                 const SizedBox(height: 12),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: const [
-                    _LegendItem(color: Colors.green, label: "Accompli"),
-                    _LegendItem(color: Colors.orange, label: "Partiel"),
-                    _LegendItem(color: Colors.red, label: "Non fait"),
+                  children: [
+                    _LegendItem(color: Colors.green, label: tr('legend_done')),
+                    _LegendItem(color: Colors.orange, label: tr('legend_partial')),
+                    _LegendItem(color: Colors.red, label: tr('legend_not_done')),
                   ],
                 ),
                 const Divider(height: 30),
@@ -95,7 +96,7 @@ Row(
     Expanded(
       child: ElevatedButton.icon(
         icon: const Icon(Icons.view_week),
-        label: const Text("Générer la semaine"),
+        label: Text(tr('generate_week')),
         onPressed: vm.isGenerating
             ? null
             : () => _showPromptDialog(context, vm, 'week'),
@@ -105,7 +106,7 @@ Row(
     Expanded(
       child: ElevatedButton.icon(
         icon: const Icon(Icons.calendar_month),
-        label: const Text("Générer pour 2 semaines"),
+        label: Text(tr('generate_2weeks')),
         onPressed: vm.isGenerating
             ? null
             : () => _showPromptDialog(context, vm, 'month'),
@@ -117,17 +118,19 @@ const SizedBox(height: 12),
 
 if (vm.selectedDay != null)
   Text(
-    "Programme du ${vm.selectedDay!.day.toString().padLeft(2, '0')}/"
-    "${vm.selectedDay!.month.toString().padLeft(2, '0')}/${vm.selectedDay!.year}",
+    tr('program_for_date', args: [
+      "${vm.selectedDay!.day.toString().padLeft(2, '0')}/"
+      "${vm.selectedDay!.month.toString().padLeft(2, '0')}/${vm.selectedDay!.year}"
+    ]),
     style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
   )
 else
-  const Text("Aucune date sélectionnée"),
+  Text(tr('no_date_selected')),
 
                 const SizedBox(height: 8),
                 ElevatedButton.icon(
   icon: const Icon(Icons.copy),
-  label: const Text("Copier"),
+  label: Text(tr('copy')),
   onPressed: () async {
     final picked = await showDatePicker(
       context: context,
@@ -142,24 +145,24 @@ else
   },
 ),
                 if (vm.selectedDay != null && vm.selectedProgram == null)
-                  const Text("Aucun programme ce jour-là."),
+                  Text(tr('no_program_that_day')),
                 if (vm.selectedProgram != null)
                   Column(
                     children: [
-                      Text("Nom : ${vm.selectedProgram!['nom']}"),
-                      Text("Commentaire : ${vm.selectedProgram!['commentaire'] ?? '—'}"),
+                      Text("${tr('name')}: ${vm.selectedProgram!['nom']}"),
+                      Text("${tr('commentary')}: ${vm.selectedProgram!['commentaire'] ?? '—'}"),
                       const SizedBox(height: 10),
                       ...(vm.selectedProgram!['exercices'] as List).map((e) {
                         final ex = Map<String, dynamic>.from(e);
                         List<String> specs = [];
 
-                        if ((ex['subType'] ?? '').isNotEmpty) specs.add("Sous-type: ${ex['subType']}");
-                        if ((ex['series'] ?? '').isNotEmpty) specs.add("Séries: ${ex['series']}");
-                        if ((ex['repetitions'] ?? '').isNotEmpty) specs.add("Répétitions: ${ex['repetitions']}");
-                        if ((ex['duration'] ?? '').isNotEmpty) specs.add("Durée: ${ex['duration']}");
-                        if ((ex['distance'] ?? '').isNotEmpty) specs.add("Distance: ${ex['distance']}");
-                        if ((ex['intensity'] ?? '').isNotEmpty) specs.add("Intensité: ${ex['intensity']}");
-                        if ((ex['restTime'] ?? '').isNotEmpty) specs.add("Repos: ${ex['restTime']}");
+                        if ((ex['subType'] ?? '').isNotEmpty) specs.add("${tr('subtype')}: ${ex['subType']}");
+                        if ((ex['series'] ?? '').isNotEmpty) specs.add("${tr('series')}: ${ex['series']}");
+                        if ((ex['repetitions'] ?? '').isNotEmpty) specs.add("${tr('repetitions')}: ${ex['repetitions']}");
+                        if ((ex['duration'] ?? '').isNotEmpty) specs.add("${tr('duration')}: ${ex['duration']}");
+                        if ((ex['distance'] ?? '').isNotEmpty) specs.add("${tr('distance')}: ${ex['distance']}");
+                        if ((ex['intensity'] ?? '').isNotEmpty) specs.add("${tr('intensity')}: ${ex['intensity']}");
+                        if ((ex['restTime'] ?? '').isNotEmpty) specs.add("${tr('rest')}: ${ex['restTime']}");
 
                         return ListTile(
                           contentPadding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
@@ -176,7 +179,7 @@ else
   children: [
     ElevatedButton.icon(
       icon: const Icon(Icons.edit),
-      label: const Text("Modifier"),
+      label: Text(tr('edit')),
       onPressed: () {
         // Navigue vers AddProgramPage avec la date
         Navigator.pushNamed(
@@ -188,17 +191,17 @@ else
     ),
     ElevatedButton.icon(
       icon: const Icon(Icons.delete),
-      label: const Text("Supprimer"),
+      label: Text(tr('delete')),
       style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
       onPressed: () async {
         final confirm = await showDialog<bool>(
           context: context,
           builder: (_) => AlertDialog(
-            title: const Text("Confirmer la suppression"),
-            content: const Text("Souhaites-tu vraiment supprimer ce programme ?"),
+            title: Text(tr('confirm_delete_title')),
+            content: Text(tr('confirm_delete_content')),
             actions: [
-              TextButton(onPressed: () => Navigator.pop(context, false), child: const Text("Annuler")),
-              TextButton(onPressed: () => Navigator.pop(context, true), child: const Text("Supprimer")),
+              TextButton(child: Text(tr('cancel')), onPressed: () => Navigator.pop(context, false)),
+              TextButton(child: Text(tr('delete')), onPressed: () => Navigator.pop(context, true)),
             ],
           ),
         );
@@ -245,21 +248,19 @@ void _showPromptDialog(BuildContext context, CalendarViewModel vm, String range)
   showDialog(
     context: context,
     builder: (ctx) => AlertDialog(
-      title: Text("Objectif pour la ${range == 'week' ? 'semaine' : 'mois'}"),
+      title: Text(tr('objective_for', args: [range == 'week' ? tr('generate_week') : tr('generate_2weeks')])),
       content: TextField(
         controller: controller,
-        decoration: const InputDecoration(
-          labelText: "Décris ton objectif (ex: cardio, renfo, repos...)",
-        ),
+        decoration: InputDecoration(labelText: tr('describe_objective')),
         autofocus: true,
       ),
       actions: [
         TextButton(
-          child: const Text("Annuler"),
+          child: Text(tr('cancel')),
           onPressed: () => Navigator.of(ctx).pop(),
         ),
         TextButton(
-          child: const Text("Valider"),
+          child: Text(tr('validate')),
           onPressed: () {
             Navigator.of(ctx).pop();
             vm.objectifCtrl.text = controller.text;

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import '../main.dart'; // 🔁 pour relancer MainApp après enregistrement
 
@@ -38,7 +39,7 @@ class _CompleteProfilePageState extends State<CompleteProfilePage> {
       }
     } catch (e) {
       if (mounted) {
-        setState(() => error = 'Erreur : $e');
+        setState(() => error = '${tr("error")}: $e');
       }
     }
   }
@@ -48,7 +49,7 @@ class _CompleteProfilePageState extends State<CompleteProfilePage> {
     debugPrint("Affichage de CompleteProfilePage");
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Compléter le profil')),
+      appBar: AppBar(title: Text(tr('complete_profile'))),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -56,17 +57,17 @@ class _CompleteProfilePageState extends State<CompleteProfilePage> {
             TextField(
               controller: poidsController,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(labelText: "Poids (kg)"),
+              decoration: InputDecoration(labelText: tr("weight")),
             ),
             TextField(
               controller: tailleController,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(labelText: "Taille (cm)"),
+              decoration: InputDecoration(labelText: tr("height")),
             ),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: saveProfile,
-              child: const Text("Enregistrer"),
+              child: Text(tr("save")),
             ),
             if (error.isNotEmpty)
               Text(error, style: const TextStyle(color: Colors.red)),

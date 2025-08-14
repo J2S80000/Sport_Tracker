@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -26,75 +27,72 @@ class _LoginPageState extends State<LoginPage> {
     } catch (e) {
       if (mounted) {
         setState(() {
-          errorMessage = 'Erreur : ${e.toString()}';
+          errorMessage = tr('login_error', args: [e.toString()]);
         });
       }
     }
   }
 
-Future<void> signInWithGoogle() async {
-  try {
-    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-    if (googleUser == null) {
-      print('Google sign-in annulé');
-      return;
-    }
+  Future<void> signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      if (googleUser == null) {
+        print(tr('google_sign_in_cancelled'));
+        return;
+      }
 
-    final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
 
-    final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken,
-    );
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
 
-    final userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
-    final user = userCredential.user;
+      final userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+      final user = userCredential.user;
 
-    if (user == null) return;
+      if (user == null) return;
 
-    print('Utilisateur connecté : ${user.email}, UID: ${user.uid}');
+      print('Utilisateur connecté : ${user.email}, UID: ${user.uid}');
 
-    final doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
-    print('Document existe ? ${doc.exists}');
+      final doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+      print('Document existe ? ${doc.exists}');
 
-   
-
-  } catch (e) {
-    if (mounted) {
-      setState(() {
-        errorMessage = 'Erreur Google : ${e.toString()}';
-      });
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          errorMessage = tr('google_login_error', args: [e.toString()]);
+        });
+      }
     }
   }
-}
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Connexion")),
+      appBar: AppBar(title: Text(tr('login'))),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             TextField(
               controller: emailController,
-              decoration: const InputDecoration(labelText: "Email"),
+              decoration: InputDecoration(labelText: tr('email')),
             ),
             TextField(
               controller: passwordController,
-              decoration: const InputDecoration(labelText: "Mot de passe"),
+              decoration: InputDecoration(labelText: tr('password')),
               obscureText: true,
             ),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: signIn,
-              child: const Text("Se connecter"),
+              child: Text(tr('sign_in')),
             ),
             const SizedBox(height: 10),
             ElevatedButton.icon(
               icon: const Icon(Icons.login),
-              label: const Text("Connexion avec Google"),
+              label: Text(tr('sign_in_with_google')),
               onPressed: signInWithGoogle,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white,
@@ -110,7 +108,7 @@ Future<void> signInWithGoogle() async {
                   MaterialPageRoute(builder: (context) => const RegisterPage()),
                 );
               },
-              child: const Text("Pas encore inscrit ? Créer un compte"),
+              child: Text(tr('not_registered')),
             ),
             if (errorMessage.isNotEmpty)
               Text(errorMessage, style: const TextStyle(color: Colors.red)),
