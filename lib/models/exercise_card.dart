@@ -33,7 +33,7 @@ class _ExerciseCardState extends State<ExerciseCard> {
         padding: const EdgeInsets.all(12),
         child: Column(
           children: [
-            // ✅ Header avec numéro et bouton supprimer
+            // Header avec numéro et bouton supprimer
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -54,14 +54,15 @@ class _ExerciseCardState extends State<ExerciseCard> {
             ),
             const SizedBox(height: 8),
             
+            // Type d'exercice (clé, affichage traduit)
             DropdownButtonFormField<String>(
-              value: b.type, // Doit être une clé, ex: "squat_barre"
-              decoration: const InputDecoration(labelText: "Type d'exercice"),
+              value: b.type, // clé, ex: "squat_barre"
+              decoration: InputDecoration(labelText: tr('exercise_type')),
               items: ExerciseBlock.subTypeOptions.keys
                   .map((t) => DropdownMenuItem(
-                    value: t, // La clé !
-                    child: Text(tr(t)), // Affichage traduit
-                  ))
+                        value: t,
+                        child: Text(tr(t)),
+                      ))
                   .toList(),
               onChanged: (val) => setState(() {
                 b.type = val!;
@@ -74,63 +75,62 @@ class _ExerciseCardState extends State<ExerciseCard> {
               }),
             ),
             
-            // Sous-type pour Street Workout, Plyométrie et Renfo avec charges
+            // Sous-type (clé, affichage traduit)
             if (ExerciseBlock.subTypeOptions[b.type]!.isNotEmpty)
               DropdownButtonFormField<String>(
                 value: b.subType.isEmpty ? null : b.subType,
-                decoration: const InputDecoration(labelText: "Sous-type"),
+                decoration: InputDecoration(labelText: tr('sub_type')),
                 items: ExerciseBlock.subTypeOptions[b.type]!
                     .map((s) => DropdownMenuItem(
-                      value: s, // La clé !
-                      child: Text(tr(s)), // Affichage traduit
-                    ))
+                          value: s,
+                          child: Text(tr(s)),
+                        ))
                     .toList(),
                 onChanged: (val) => setState(() => b.subType = val!),
               ),
             
-            // Répétitions pour Street Workout, Plyométrie et Renfo avec charges
-            if ((b.type == 'Street Workout' || b.type == 'Plyometrie' || b.type == 'Renfo avec charges') && b.subType.isNotEmpty)
+            // Répétitions pour certains types
+            if ((b.type == 'street_workout' || b.type == 'plyometrics' || b.type == 'weight_training') && b.subType.isNotEmpty)
               TextFormField(
                 initialValue: b.repetitions,
-                decoration: InputDecoration(labelText: "Nombre de répétitions pour ${b.subType}"),
+                decoration: InputDecoration(labelText: tr('repetitions_for', args: [tr(b.subType)])),
                 keyboardType: TextInputType.number,
                 onChanged: (val) => b.repetitions = val,
               ),
             
-            // Distance pour Course uniquement
-            if (b.type == 'Course')
+            // Distance pour running uniquement
+            if (b.type == 'running')
               TextFormField(
                 initialValue: b.distance,
-                decoration: const InputDecoration(labelText: "Distance (km)"),
+                decoration: InputDecoration(labelText: tr('distance_km')),
                 keyboardType: TextInputType.number,
                 onChanged: (val) => b.distance = val,
               ),
             
-            // Séries pour Street Workout, Plyométrie, Renfo avec charges, Shadow Boxing et Cardio libre
-            if ((b.type == 'Street Workout' && b.subType.isNotEmpty) ||
-                (b.type == 'Plyometrie' && b.subType.isNotEmpty) ||
-                (b.type == 'Renfo avec charges' && b.subType.isNotEmpty) ||
-                b.type == 'Shadow Boxing' ||
-                b.type == 'Cardio libre')
+            // Séries pour certains types
+            if ((b.type == 'street_workout' && b.subType.isNotEmpty) ||
+                (b.type == 'plyometrics' && b.subType.isNotEmpty) ||
+                (b.type == 'weight_training' && b.subType.isNotEmpty) ||
+                b.type == 'shadow_boxing' ||
+                b.type == 'free_cardio')
               TextFormField(
                 initialValue: b.series,
-                decoration: const InputDecoration(labelText: "Nombre de séries"),
+                decoration: InputDecoration(labelText: tr('series_count')),
                 keyboardType: TextInputType.number,
                 onChanged: (val) => b.series = val,
               ),
             
-            // Durée pour Course, Shadow Boxing, Cardio libre et Repos actif
-            if (b.type == 'Course' ||
-                b.type == 'Shadow Boxing' ||
-                b.type == 'Cardio libre' ||
-                b.type == 'Repos actif' ||
-    (b.type == 'Street Workout' && b.subType == 'Gainage'))
+            // Durée pour certains types
+            if (b.type == 'running' ||
+                b.type == 'shadow_boxing' ||
+                b.type == 'free_cardio' ||
+                b.type == 'active_rest' ||
+                (b.type == 'street_workout' && b.subType == 'plank'))
               TextFormField(
                 initialValue: b.duration,
-                decoration: const InputDecoration(labelText: "Durée (minutes)"),
+                decoration: InputDecoration(labelText: tr('duration_min')),
                 keyboardType: TextInputType.number,
                 onChanged: (val) {
-                  // ➜ si l'user tape « 900 » on l'interprète comme 15 min
                   final n = int.tryParse(val) ?? 0;
                   const _SEC_THRESHOLD = 600;
                   final minutes = n > _SEC_THRESHOLD ? (n / 60).round() : n;
@@ -138,25 +138,25 @@ class _ExerciseCardState extends State<ExerciseCard> {
                 },
               ),
             
-            // Poids/Charge pour Renfo avec charges uniquement
-            if (b.type == 'Renfo avec charges' && b.subType.isNotEmpty)
+            // Poids/Charge pour weight_training uniquement
+            if (b.type == 'weight_training' && b.subType.isNotEmpty)
               TextFormField(
                 initialValue: b.weight ?? '',
-                decoration: const InputDecoration(labelText: "Poids/Charge (kg)"),
+                decoration: InputDecoration(labelText: tr('weight_kg')),
                 keyboardType: TextInputType.number,
                 onChanged: (val) => b.weight = val,
               ),
             
-            // Intensité pour tous sauf Repos actif
-            if (b.type != 'Repos actif')
+            // Intensité pour tous sauf active_rest
+            if (b.type != 'active_rest')
               DropdownButtonFormField<String>(
                 value: b.intensity,
-                decoration: const InputDecoration(labelText: "Intensité"),
+                decoration: InputDecoration(labelText: tr('intensity')),
                 items: ExerciseBlock.intensityOptions
                     .map((i) => DropdownMenuItem(
-                      value: i, // La clé !
-                      child: Text(tr(i)), // Affichage traduit
-                    ))
+                          value: i,
+                          child: Text(tr(i)),
+                        ))
                     .toList(),
                 onChanged: (val) => setState(() => b.intensity = val!),
               ),
@@ -164,7 +164,7 @@ class _ExerciseCardState extends State<ExerciseCard> {
             // Temps de repos pour tous les exercices
             TextFormField(
               initialValue: b.restTime,
-              decoration: const InputDecoration(labelText: "Repos après (en sec)"),
+              decoration: InputDecoration(labelText: tr('rest_after_exercise')),
               keyboardType: TextInputType.number,
               onChanged: (val) => b.restTime = val,
             ),
@@ -174,17 +174,17 @@ class _ExerciseCardState extends State<ExerciseCard> {
     );
   }
 
-  // ✅ Dialog de confirmation pour la suppression
+  // Dialog de confirmation pour la suppression
   void _showDeleteDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Supprimer l\'exercice'),
-        content: Text('Voulez-vous vraiment supprimer l\'exercice ${widget.index + 1} ?'),
+        title: Text(tr('delete_exercise')),
+        content: Text(tr('confirm_delete_exercise', args: [(widget.index + 1).toString()])),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Annuler'),
+            child: Text(tr('cancel')),
           ),
           TextButton(
             onPressed: () {
@@ -192,7 +192,7 @@ class _ExerciseCardState extends State<ExerciseCard> {
               widget.onDelete?.call();
             },
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Supprimer'),
+            child: Text(tr('delete')),
           ),
         ],
       ),

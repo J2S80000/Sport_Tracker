@@ -112,7 +112,7 @@ class ExerciseBlock {
   ];
 
   // Helper method to normalize intensity values
-  static String _normalizeIntensity(String intensity) {
+  static String normalizeIntensity(String intensity) {
     switch (intensity.toLowerCase().trim()) {
       case 'low':
       case 'faible':
@@ -140,7 +140,7 @@ class ExerciseBlock {
     return m;
   }
 
-  static String _normalize(String s) {
+   static String normalize(String s) {
     const Map<String, String> rep = {
       'à':'a','á':'a','â':'a','ä':'a','ã':'a','å':'a','ā':'a',
       'ç':'c',
@@ -168,8 +168,8 @@ class ExerciseBlock {
   }
 
   int _estimateMinutesFromDistance(String type, String intensity, String distance) {
-    final t = _normalize(type);
-    final i = _normalize(intensity);
+    final t = normalize(type);
+    final i = normalize(intensity);
 
     final meters = _parseDistanceMeters(distance);
     if (meters <= 0) return 0;
@@ -217,8 +217,8 @@ class ExerciseBlock {
   }
 
   static double _getMET(String type, String subType, String intensity) {
-    final t = _normalize(type);
-    final i = _normalize(intensity);
+    final t = normalize(type);
+    final i = normalize(intensity);
     double baseMET;
 
     switch (t) {
@@ -371,7 +371,7 @@ class _ExerciseTypeSelectorState extends State<ExerciseTypeSelector> {
       onChanged: (val) => setState(() => selectedType = val!),
       items: typeOptions.map((key) => DropdownMenuItem(
         value: key, // toujours la clé !
-        child: Text(tr(ExerciseBlock._normalize(key))), // affichage traduit
+        child: Text(tr(ExerciseBlock.normalize(key))), // affichage traduit
       )).toList(),
     );
   }

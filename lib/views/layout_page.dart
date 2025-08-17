@@ -144,6 +144,11 @@ class _SettingsDialogState extends State<_SettingsDialog> {
                   value: Locale('en'),
                   child: Text('English'),
                 ),
+                DropdownMenuItem(
+                  value: Locale('es'),
+                  child: Text('Español'),
+                ),
+                
               ],
             ),
           ],
