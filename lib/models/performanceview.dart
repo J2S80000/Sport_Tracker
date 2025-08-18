@@ -1,3 +1,4 @@
+import 'package:SportTracker/models/exercise_block.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -149,83 +150,120 @@ class AddPerformanceViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  double calculateCompletion({
-    required int? plannedSeries,
-    required int? plannedDuration,
-    required int? performedSeries,
-    required int? performedDuration,
-  }) {
-    if (plannedSeries == null || plannedDuration == null || plannedSeries == 0 || plannedDuration == 0) {
-      return 0;
-    }
-    final seriesRatio = (performedSeries ?? 0) / plannedSeries;
-    final durationRatio = (performedDuration ?? 0) / plannedDuration;
-    return ((seriesRatio + durationRatio) / 2 * 100).clamp(0, 100);
+double calculateCompletion({
+  required int? plannedSeries,
+  required int? plannedReps,
+  required int? plannedDuration,
+  required int? performedSeries,
+  required int? performedReps,
+  required int? performedDuration,
+}) {
+  final ratios = <double>[];
+
+  if (plannedSeries != null && plannedSeries > 0) {
+    ratios.add((performedSeries ?? 0) / plannedSeries);
   }
+
+  if (plannedReps != null && plannedReps > 0) {
+    ratios.add((performedReps ?? 0) / plannedReps);
+  }
+
+  if (plannedDuration != null && plannedDuration > 0) {
+    ratios.add((performedDuration ?? 0) / plannedDuration);
+  }
+
+  if (ratios.isEmpty) return 0;
+
+  final avg = ratios.reduce((a, b) => a + b) / ratios.length;
+  return (avg * 100).clamp(0, 100);
+}
+
+
 
   Future<String?> submitPerformance(BuildContext context) async {
-    if (!formKey.currentState!.validate()) return 'Formulaire invalide.';
+  if (!formKey.currentState!.validate()) return 'Formulaire invalide.';
 
-    final user = _auth.currentUser;
-    if (user == null) return 'Utilisateur non connecté.';
+  final user = _auth.currentUser;
+  if (user == null) return 'Utilisateur non connecté.';
 
-    final now = DateTime.now();
-    final dateKey = DateTime(now.year, now.month, now.day).toIso8601String().substring(0, 10);
+  final now = DateTime.now();
+  final dateKey = DateTime(now.year, now.month, now.day).toIso8601String().substring(0, 10);
 
-    final programmeSnap = await _firestore
-        .collection('users')
-        .doc(user.uid)
-        .collection('programmes')
-        .where('jour', isGreaterThanOrEqualTo: dateKey)
-        .where('jour', isLessThan: dateKey + 'T23:59:59')
-        .limit(1)
-        .get();
+  final programmeSnap = await _firestore
+      .collection('users')
+      .doc(user.uid)
+      .collection('programmes')
+      .where('jour', isGreaterThanOrEqualTo: dateKey)
+      .where('jour', isLessThan: dateKey + 'T23:59:59')
+      .limit(1)
+      .get();
 
-    if (programmeSnap.docs.isEmpty) {
-      return 'Aucun programme aujourd\'hui pour valider cette performance.';
-    }
+  if (programmeSnap.docs.isEmpty) {
+    return 'Aucun programme aujourd\'hui pour valider cette performance.';
+  }
 
-    final doc = programmeSnap.docs.first;
-    final data = doc.data();
-    final exercices = List<Map<String, dynamic>>.from(data['exercices'] ?? []);
-    final index = exercices.indexWhere((e) => e['type'] == model.type);
-    if (index == -1) {
-      return 'Aucun exercice correspondant dans le programme du jour.';
-    }
+  final doc = programmeSnap.docs.first;
+  final data = doc.data();
+  final exercices = List<Map<String, dynamic>>.from(data['exercices'] ?? []);
 
-    final ex = exercices[index];
-    final plannedSeries = int.tryParse(ex['series'] ?? '');
-    final plannedDuration = int.tryParse(ex['duration'] ?? '');
-    final performedSeries = int.tryParse(model.series);
-    final performedDuration = int.tryParse(model.duration);
+  final index = exercices.indexWhere((e) =>
+    ExerciseBlock.normalize(e['type'] ?? '') == ExerciseBlock.normalize(model.type) &&
+    ExerciseBlock.normalize(e['subType'] ?? '') == ExerciseBlock.normalize(model.subType)
+  );
 
-    final percent = calculateCompletion(
-      plannedSeries: plannedSeries,
-      plannedDuration: plannedDuration,
-      performedSeries: performedSeries,
-      performedDuration: performedDuration,
-    ).round();
+  // 🔹 Récupère les valeurs prévues AVANT modification
+  final plannedSeries   = index != -1 ? int.tryParse(exercices[index]['series']?.toString() ?? '') : null;
+  final plannedReps     = index != -1 ? int.tryParse(exercices[index]['repetitions']?.toString() ?? '') : null;
+  final plannedDuration = index != -1 ? int.tryParse(exercices[index]['duration']?.toString() ?? '') : null;
 
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Valider la performance ?"),
-        content: Text("Cette performance correspond à $percent% de l'objectif.\nRemplacer et marquer comme accompli ?"),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text("Annuler")),
-          TextButton(onPressed: () => Navigator.pop(context, true), child: const Text("Valider")),
-        ],
-      ),
-    );
+  // 🔹 Valeurs réalisées (issues du formulaire)
+  final performedSeries   = int.tryParse(model.series);
+  final performedReps     = int.tryParse(model.repetitions);
+  final performedDuration = int.tryParse(model.duration);
 
-    if (confirmed != true) return null;
+  // 🔹 Calcul du % d'accomplissement
+  final percent = calculateCompletion(
+    plannedSeries: plannedSeries,
+    plannedReps: plannedReps,
+    plannedDuration: plannedDuration,
+    performedSeries: performedSeries,
+    performedReps: performedReps,
+    performedDuration: performedDuration,
+  ).round();
 
+  print("DEBUG -> Planned series: $plannedSeries, reps: $plannedReps, duration: $plannedDuration");
+  print("DEBUG -> Performed series: $performedSeries, reps: $performedReps, duration: $performedDuration");
+  print("DEBUG -> Percent: $percent%");
+
+  // 🔹 Confirmation utilisateur AVANT sauvegarde
+  final confirmed = await showDialog<bool>(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: const Text("Valider la performance ?"),
+      content: Text("Cette performance correspond à $percent% de l'objectif.\nRemplacer et marquer comme accompli ?"),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(context, false), child: const Text("Annuler")),
+        TextButton(onPressed: () => Navigator.pop(context, true), child: const Text("Valider")),
+      ],
+    ),
+  );
+
+  if (confirmed != true) return null; // ❌ rien n'est sauvegardé si annulé
+
+  // 🔹 Mise à jour Firestore seulement si confirmé
+  if (index == -1) {
+    exercices.add(model.toMap());
+  } else {
     exercices[index] = {
-      ...ex,
+      ...exercices[index],
       ...model.toMap(),
     };
-
-    await doc.reference.update({'exercices': exercices});
-    return '✅ Performance enregistrée et exercice mis à jour à $percent%.';
   }
+
+  await doc.reference.update({'exercices': exercices});
+
+  return '✅ Performance enregistrée et exercice mis à jour à $percent%.';
+}
+
+
 }

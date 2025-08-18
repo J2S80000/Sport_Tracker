@@ -29,7 +29,7 @@ class AddPerformancePage extends StatelessWidget {
                         value: type,
                         decoration: InputDecoration(labelText: tr('exercise_type')),
                         items: vm.subTypeOptions.keys
-                            .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                            .map((e) => DropdownMenuItem(value: e, child: Text(tr(e))))
                             .toList(),
                         onChanged: (val) => vm.updateField(type: val),
                       ),
@@ -39,7 +39,7 @@ class AddPerformancePage extends StatelessWidget {
                           value: subType.isEmpty ? null : subType,
                           decoration: InputDecoration(labelText: tr('sub_type')),
                           items: vm.subTypeOptions[type]!
-                              .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                              .map((e) => DropdownMenuItem(value: e, child: Text(tr(e))))
                               .toList(),
                           onChanged: (val) => vm.updateField(subType: val),
                         ),

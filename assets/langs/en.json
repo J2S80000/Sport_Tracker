@@ -164,5 +164,10 @@
   "existing_program_message": "You already have a program for this date. Do you want to replace it?",
   "new_date_selected": "New date selected",
   "add_something": "Add something",
-  "all_subtypes": "All subtypes"
+  "all_subtypes": "All subtypes","dips": "Dips",
+"squats": "Squats",
+"burpees": "Burpees",
+"planche": "Plank",
+"curl_biceps": "Biceps curl",
+  "program_of_the_day": "Program of the day"
 }

@@ -137,7 +137,7 @@
 "active_rest": "Repos actif",
 "plyometrics": "Plyométrie",
 "weight_training": "Renforcement avec charges",
-
+"program_of_the_day": "Programme du jour",
 "burpees": "Burpees",
 "jumping_burpees": "Burpees sautés",
 "skaters": "Skaters",
@@ -193,6 +193,11 @@
 "existing_program_message": "Tu as déjà un programme pour cette date. Veux-tu le remplacer ?",
 "new_date_selected": "Nouvelle date sélectionnée",
 "add_something": "Ajouter quelque chose",
-"all_subtypes": "Tous les sous-types"
+"all_subtypes": "Tous les sous-types",
+"dips": "Dips",
+"squats": "Squats",
+"burpees": "Burpees",
+"planche": "Planche",
+"curl_biceps": "Curl Biceps"
 }
 

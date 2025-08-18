@@ -263,7 +263,7 @@ void onStepCountError(error) {
 @override
 Widget build(BuildContext context) {
   return LayoutPage(
-    title: "Programme du jour",
+    title: tr('program_of_the_day'),
     child: isLoading
         ? const Center(child: CircularProgressIndicator())
         : programData == null

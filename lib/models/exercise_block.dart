@@ -286,7 +286,6 @@ class ExerciseBlock {
     return block;
   }
   static String _convertToKey(String text) {
-  // Table de correspondance ancien texte -> nouvelle clé
   const conversionTable = {
     'Street Workout': 'street_workout',
     'Course': 'running',
@@ -295,10 +294,12 @@ class ExerciseBlock {
     'Repos actif': 'active_rest',
     'Plyométrie': 'plyometrics',
     'Renfo avec charges': 'weight_training',
+    'Planche': 'plank',
+    'Curl biceps': 'bicep_curl',
     // Ajoutez toutes les conversions nécessaires
   };
   
-  return conversionTable[text] ?? text.toLowerCase();
+  return conversionTable[text] ?? text.toLowerCase().replaceAll(' ', '_');
 }
 
 static String _convertIntensityToKey(String intensity) {

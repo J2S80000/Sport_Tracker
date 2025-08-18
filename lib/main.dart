@@ -23,7 +23,7 @@ Future<void> main() async {
     EasyLocalization(
       supportedLocales: const [Locale('fr'), Locale('en')],
       path: 'assets/langs', // assure-toi que ce dossier existe et contient tes fichiers JSON
-      fallbackLocale: const Locale('fr'),
+      fallbackLocale: const Locale('en'),
       child: const MainApp(),
     ),
   );
