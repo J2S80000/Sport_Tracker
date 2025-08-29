@@ -75,8 +75,8 @@
 "rest": "Repos : {} sec",
 "program": "Programme : {} • {}",
 "calories_burned_value": "🔥 Calories brûlées : {} kcal",
-"avg_intensity": "Moy. intensité : {}",
-"programs_done": "{} programme(s) effectué(s)",
+"avg_intensity": "Moy. intensité",
+"programs_completed": "programme(s) effectué(s)",
 "calendar_tracking": "Suivi calendrier",
 "legend_done": "Accompli",
 "legend_partial": "Partiel",
@@ -198,6 +198,15 @@
 "squats": "Squats",
 "burpees": "Burpees",
 "planche": "Planche",
-"curl_biceps": "Curl Biceps"
+"curl_biceps": "Curl Biceps",
+ "calorie_balance": "Bilan calorique",
+  "burned": "Brûlées",
+  "consumed": "Consommées", 
+  "calories_consumed": "Calories consommées",
+  "calorie_deficit": "Déficit calorique",
+  "calorie_surplus": "Surplus calorique",
+  "deficit_description": "Vous êtes en déficit de {0} kcal, favorable à la perte de poids",
+  "surplus_description": "Vous avez un surplus de {0} kcal, attention à la prise de poids",
+  "save": "Sauvegarder"
 }
 

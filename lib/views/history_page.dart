@@ -27,14 +27,24 @@ class HistoryPage extends StatelessWidget {
                 Wrap(
                   spacing: 10,
                   children: [
-                    /* ───────────── Menu par TYPE ───────────── */
                     DropdownButton<String>(
-                      value: vm.selectedType,
-                      onChanged: (val) => vm.setType(val!),
-                      items: vm.typeOptions
+      value: vm.selectedType,
+      onChanged: (val) => vm.setType(val!),
+      items: vm.typeOptions
+          .map((e) => DropdownMenuItem(
+            value: e, 
+            child: Text(tr(e))
+          ))
+          .toList(),
+    ),
+                    /* ───────────── Menu par MÉTRIQUE ───────────── */
+                    DropdownButton<String>(
+                      value: vm.selectedMetric,
+                      onChanged: (val) => vm.setMetric(val!),
+                      items: vm.metricOptions
                           .map((e) => DropdownMenuItem(
                             value: e, 
-                            child: Text(tr(e))
+                            child: Text(e)
                           ))
                           .toList(),
                     ),
@@ -126,10 +136,21 @@ class HistoryPage extends StatelessWidget {
                                           spots: vm.dataPoints
                                               .asMap()
                                               .entries
-                                              .map((e) => FlSpot(e.key.toDouble(), e.value.avgIntensity))
+                                              .map((e) {
+                                                final value = vm.selectedMetric == 'Intensité' 
+                                                  ? e.value.avgIntensity
+                                                  : vm.selectedMetric == 'Calories'
+                                                    ? (e.value.totalCalories ?? 0)
+                                                    : (e.value.count?.toDouble() ?? 0); // Pour 'Séances'
+                                                return FlSpot(e.key.toDouble(), value);
+                                              })
                                               .toList(),
                                           barWidth: 3,
-                                          color: Colors.blue,
+                                          color: vm.selectedMetric == 'Intensité' 
+                                            ? Colors.blue 
+                                            : vm.selectedMetric == 'Calories'
+                                              ? Colors.red
+                                              : Colors.green,
                                           dotData: FlDotData(show: true),
                                         )
                                       ],
@@ -139,8 +160,18 @@ class HistoryPage extends StatelessWidget {
                                             final i = s.x.toInt();
                                             if (i >= vm.dataPoints.length) return null;
                                             final p = vm.dataPoints[i];
+                                            
+                                            String tooltipText;
+                                            if (vm.selectedMetric == 'Intensité') {
+                                              tooltipText = '${p.nom}\n${p.commentaire}\nIntensité: ${p.avgIntensity.toStringAsFixed(2)}';
+                                            } else if (vm.selectedMetric == 'Calories') {
+                                              tooltipText = '${p.nom}\nCalories: ${p.totalCalories?.round() ?? 0} kcal\nDate: ${p.label}';
+                                            } else {
+                                              tooltipText = '${p.nom}\nSéances: ${p.count}\nDate: ${p.label}';
+                                            }
+                                            
                                             return LineTooltipItem(
-                                              '${p.nom}\n${p.commentaire}\nIntensité: ${p.avgIntensity.toStringAsFixed(2)}', 
+                                              tooltipText, 
                                               const TextStyle(color: Colors.white)
                                             );
                                           }).toList(),
@@ -167,7 +198,18 @@ class HistoryPage extends StatelessWidget {
                                           ),
                                         ),
                                         leftTitles: AxisTitles(
-                                          sideTitles: SideTitles(showTitles: true, reservedSize: 36),
+                                          sideTitles: SideTitles(
+                                            showTitles: true,
+                                            getTitlesWidget: (value, _) {
+                                              String unit = '';
+                                              if (vm.selectedMetric == 'Intensité') unit = '';
+                                              else if (vm.selectedMetric == 'Calories') unit = ' kcal';
+                                              else if (vm.selectedMetric == 'Séances') unit = '';
+                                              
+                                              return Text('${value.round()}$unit', style: const TextStyle(fontSize: 10));
+                                            },
+                                            reservedSize: 40,
+                                          ),
                                         ),
                                       ),
                                       gridData: FlGridData(show: true),
@@ -183,46 +225,79 @@ class HistoryPage extends StatelessWidget {
                                       final p = vm.dataPoints[index];
 
                                      if (vm.selectedPeriod == 'Jour') {
-  return Card(
-    child: ListTile(
-      title: Text("${p.label} - ${tr('intensity')}: ${p.avgIntensity.toStringAsFixed(2)}"),
-      subtitle: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Properly translate both type and subtype
-          Text("${tr('exercise')}: ${tr(p.type ?? 'unknown_type')}${p.subType.isNotEmpty ? ' > ${tr(p.subType)}' : ''}"),
+  return Expanded(
+  child: ListView.builder(
+    itemCount: vm.dataPoints.length,
+    itemBuilder: (_, index) {
+      final p = vm.dataPoints[index];
 
-          if ({
-            'street_workout',
-            'plyometrics',
-            'weight_training',
-            'shadow_boxing',
-            'free_cardio'
-          }.contains(p.type) && p.series != null)
-            Text("${tr('series')}: ${p.series}"),
+      if (vm.selectedPeriod == 'Jour') {
+        return Card(
+          child: ListTile(
+            title: Text("${p.label} - ${tr(vm.selectedMetric.toLowerCase())}: ${
+              vm.selectedMetric == 'Intensité' ? p.avgIntensity.toStringAsFixed(2) :
+              vm.selectedMetric == 'Calories' ? '${p.totalCalories?.round() ?? 0} kcal' :
+              '${p.count}'
+            }"),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("${tr('exercise')}: ${tr(p.type ?? 'unknown_type')}${p.subType.isNotEmpty ? ' > ${tr(p.subType)}' : ''}"),
 
-          if ({
-            'running',
-            'shadow_boxing',
-            'free_cardio',
-            'active_rest'
-          }.contains(p.type) && p.duration != null)
-            Text("${tr('duration')}: ${p.duration} min"),
+                if (vm.selectedMetric == 'Intensité') ...[
+                  if ({
+                    'street_workout',
+                    'plyometrics',
+                    'weight_training',
+                    'shadow_boxing',
+                    'free_cardio'
+                  }.contains(p.type) && p.series != null)
+                    Text("${tr('series')}: ${p.series}"),
 
-          if (p.type == 'weight_training' && p.weight != null)
-            Text("${tr('weight')}: ${p.weight} kg"),
+                  if ({
+                    'running',
+                    'shadow_boxing',
+                    'free_cardio',
+                    'active_rest'
+                  }.contains(p.type) && p.duration != null)
+                    Text("${tr('duration')}: ${p.duration} min"),
 
-          if (p.rest != null && p.rest! > 0)
-            Text("${tr('rest_time')}: ${p.rest} s"),
+                  if (p.type == 'weight_training' && p.weight != null)
+                    Text("${tr('weight')}: ${p.weight} kg"),
 
-          if (p.nom.isNotEmpty || p.commentaire.isNotEmpty)
-            Text("${tr('program')}: ${p.nom} - ${p.commentaire}"),
+                  if (p.rest != null && p.rest! > 0)
+                    Text("${tr('rest_time')}: ${p.rest} s"),
+                ],
 
-          if (p.totalCalories != null && p.totalCalories! > 0)
-            Text("${tr('calories_burned')}: ${p.totalCalories!.round()} kcal")
-        ],
-      ),
-    ),
+                if (p.nom.isNotEmpty || p.commentaire.isNotEmpty)
+                  Text("${tr('program')}: ${p.nom} - ${p.commentaire}"),
+              ],
+            ),
+          ),
+        );
+      } else {
+        return Card(
+          child: ListTile(
+            title: Text("${p.label} - ${tr(vm.selectedMetric.toLowerCase())}: ${
+              vm.selectedMetric == 'Intensité' ? p.avgIntensity.toStringAsFixed(2) :
+              vm.selectedMetric == 'Calories' ? '${p.totalCalories?.round() ?? 0} kcal' :
+              '${p.count}'
+            }"),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (vm.selectedMetric == 'Intensité' || vm.selectedMetric == 'Séances')
+                  Text("${tr('programs_completed')}: ${p.count}"),
+                
+                if (vm.selectedMetric == 'Calories')
+                  Text("${tr('total_calories')}: ${p.totalCalories?.round() ?? 0} kcal"),
+              ],
+            ),
+          ),
+        );
+      }
+    },
+  ),
   );
 } else {
                                         return Card(

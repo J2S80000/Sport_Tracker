@@ -10,7 +10,13 @@ import '../models/exercise_block.dart';
 
 class HistoryViewModel extends ChangeNotifier {
   final List<String> typeOptions = ExerciseBlock.subTypeOptions.keys.toList()..sort();
-  
+    final List<String> metricOptions = ['Intensité', 'Calories', 'Séances'];
+  String selectedMetric = 'Intensité';
+  void setMetric(String val) {
+    selectedMetric = val;
+    notifyListeners();
+    // Pas besoin de reloadData() car on utilise les mêmes données
+  }
   String selectedType = 'shadow_boxing';
   int _subTypeIndex = 0;
 
@@ -311,22 +317,22 @@ Future<void> loadData() async {
         print("  - Intensité calculée: $intensity");
 
         list.add(
-          AggregatedDataPoint(
-            label: DateFormat('dd/MM').format(date),
-            avgIntensity: intensity,
-            count: 1,
-            nom: data['nom']?.toString() ?? '',
-            commentaire: data['commentaire']?.toString() ?? '',
-            type: selectedType,
-            subType: selectedSubType,
-            rawDate: date,
-            series: int.tryParse(e['series']?.toString() ?? '1'),
-            duration: int.tryParse(e['duration']?.toString() ?? '1'),
-            totalCalories: calories,
-            weight: int.tryParse(e['weight']?.toString() ?? '0'),
-            rest: int.tryParse(e['restTime']?.toString() ?? '0'),
-          ),
-        );
+  AggregatedDataPoint(
+    label: DateFormat('dd/MM').format(date),
+    avgIntensity: intensity,
+    count: 1,
+    nom: data['nom']?.toString() ?? '',
+    commentaire: data['commentaire']?.toString() ?? '',
+    type: selectedType,
+    subType: selectedSubType,
+    rawDate: date,
+    series: int.tryParse(e['series']?.toString() ?? '1'),
+    duration: int.tryParse(e['duration']?.toString() ?? '1'),
+    totalCalories: calories, // ← Utilisez les calories de la séance
+    weight: int.tryParse(e['weight']?.toString() ?? '0'),
+    rest: int.tryParse(e['restTime']?.toString() ?? '0'),
+  ),
+);
       } else {
         _logNonMatchingExercises(e, frenchType, frenchSubType, englishType, englishSubType, isCompleted);
       }

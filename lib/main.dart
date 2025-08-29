@@ -21,7 +21,7 @@ Future<void> main() async {
 
   runApp(
     EasyLocalization(
-      supportedLocales: const [Locale('fr'), Locale('en')],
+      supportedLocales: const [Locale('fr'), Locale('en'), Locale('es')],
       path: 'assets/langs', // assure-toi que ce dossier existe et contient tes fichiers JSON
       fallbackLocale: const Locale('en'),
       child: const MainApp(),
