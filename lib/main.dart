@@ -92,6 +92,7 @@ class _MainAppState extends State<MainApp> {
         ),
         bottomNavigationBarTheme: const BottomNavigationBarThemeData(
           backgroundColor: Color(0xFF1E1E1E),
+          
           selectedItemColor: Colors.blue,
           unselectedItemColor: Colors.grey,
         ),

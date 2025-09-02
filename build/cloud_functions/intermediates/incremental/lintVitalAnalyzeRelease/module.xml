@@ -1,0 +1,26 @@
+<lint-module
+    format="1"
+    dir="C:\Users\jessy\AppData\Local\Pub\Cache\hosted\pub.dev\cloud_functions-5.5.2\android"
+    name=":cloud_functions"
+    type="LIBRARY"
+    maven="io.flutter.plugins.firebase.cloudfunctions:cloud_functions:1.0-SNAPSHOT"
+    agpVersion="8.7.3"
+    buildFolder="C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\build\cloud_functions"
+    bootClassPath="C:\Users\jessy\AppData\Local\Android\sdk\platforms\android-34\android.jar;C:\Users\jessy\AppData\Local\Android\sdk\build-tools\34.0.0\core-lambda-stubs.jar"
+    javaSourceLevel="17"
+    compileTarget="android-34"
+    neverShrinking="true">
+  <lintOptions
+      disable="InvalidPackage"
+      abortOnError="true"
+      absolutePaths="true"
+      checkReleaseBuilds="true"
+      explainIssues="true">
+    <severities>
+      <severity
+        id="InvalidPackage"
+        severity="IGNORE" />
+    </severities>
+  </lintOptions>
+  <variant name="release"/>
+</lint-module>

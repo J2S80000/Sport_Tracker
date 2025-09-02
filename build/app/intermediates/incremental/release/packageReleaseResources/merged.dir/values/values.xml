@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="gcm_defaultSenderId" translatable="false">778828345523</string>
+    <string name="google_api_key" translatable="false">AIzaSyCqGpIwJptRhZlGV-v8_OM_gr383zYXRc8</string>
+    <string name="google_app_id" translatable="false">1:778828345523:android:b2d5b93cb10003c93b00c6</string>
+    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyCqGpIwJptRhZlGV-v8_OM_gr383zYXRc8</string>
+    <string name="google_storage_bucket" translatable="false">sportracker80.firebasestorage.app</string>
+    <string name="project_id" translatable="false">sportracker80</string>
+    <style name="LaunchTheme" parent="@android:style/Theme.Light.NoTitleBar">
+        
+        <item name="android:windowBackground">@drawable/launch_background</item>
+    </style>
+    <style name="NormalTheme" parent="@android:style/Theme.Light.NoTitleBar">
+        <item name="android:windowBackground">?android:colorBackground</item>
+    </style>
+</resources>

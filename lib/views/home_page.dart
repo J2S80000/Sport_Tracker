@@ -33,6 +33,9 @@ int calculateBMR(int poidsKg) {
 }
 
 class _HomePageState extends State<HomePage> {
+    Stream<StepCount>? _stepCountStream;
+  int? totalStepsToday;
+  int? stepsAtStartOfDay;
   late TextEditingController _caloriesController;
   String todaybd = DateTime.now().toIso8601String().substring(0, 10); // "2025-06-21"
   Map<String, dynamic>? programData;

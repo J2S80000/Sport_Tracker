@@ -1,0 +1,26 @@
+<lint-module
+    format="1"
+    dir="C:\Users\jessy\AppData\Local\Pub\Cache\hosted\pub.dev\pedometer-4.1.1\android"
+    name=":pedometer"
+    type="LIBRARY"
+    maven="com.example.pedometer:pedometer:1.0-SNAPSHOT"
+    agpVersion="8.7.3"
+    buildFolder="C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\build\pedometer"
+    bootClassPath="C:\Users\jessy\AppData\Local\Android\sdk\platforms\android-35\android.jar;C:\Users\jessy\AppData\Local\Android\sdk\build-tools\34.0.0\core-lambda-stubs.jar"
+    javaSourceLevel="1.8"
+    compileTarget="android-35"
+    neverShrinking="true">
+  <lintOptions
+      disable="InvalidPackage"
+      abortOnError="true"
+      absolutePaths="true"
+      checkReleaseBuilds="true"
+      explainIssues="true">
+    <severities>
+      <severity
+        id="InvalidPackage"
+        severity="IGNORE" />
+    </severities>
+  </lintOptions>
+  <variant name="release"/>
+</lint-module>

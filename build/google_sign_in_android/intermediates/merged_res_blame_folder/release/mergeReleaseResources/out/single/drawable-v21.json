@@ -1,0 +1,6 @@
+[
+    {
+        "merged": "io.flutter.plugins.googlesignin.google_sign_in_android-release-26:/drawable-v21/notification_action_background.xml",
+        "source": "io.flutter.plugins.googlesignin.google_sign_in_android-core-1.13.1-9:/drawable-v21/notification_action_background.xml"
+    }
+]

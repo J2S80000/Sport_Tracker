@@ -1,0 +1,26 @@
+[
+    {
+        "merged": "io.flutter.plugins.firebase.auth.firebase_auth-release-33:/animator/fragment_open_enter.xml",
+        "source": "io.flutter.plugins.firebase.auth.firebase_auth-fragment-1.7.1-13:/animator/fragment_open_enter.xml"
+    },
+    {
+        "merged": "io.flutter.plugins.firebase.auth.firebase_auth-release-33:/animator/fragment_close_exit.xml",
+        "source": "io.flutter.plugins.firebase.auth.firebase_auth-fragment-1.7.1-13:/animator/fragment_close_exit.xml"
+    },
+    {
+        "merged": "io.flutter.plugins.firebase.auth.firebase_auth-release-33:/animator/fragment_close_enter.xml",
+        "source": "io.flutter.plugins.firebase.auth.firebase_auth-fragment-1.7.1-13:/animator/fragment_close_enter.xml"
+    },
+    {
+        "merged": "io.flutter.plugins.firebase.auth.firebase_auth-release-33:/animator/fragment_fade_enter.xml",
+        "source": "io.flutter.plugins.firebase.auth.firebase_auth-fragment-1.7.1-13:/animator/fragment_fade_enter.xml"
+    },
+    {
+        "merged": "io.flutter.plugins.firebase.auth.firebase_auth-release-33:/animator/fragment_open_exit.xml",
+        "source": "io.flutter.plugins.firebase.auth.firebase_auth-fragment-1.7.1-13:/animator/fragment_open_exit.xml"
+    },
+    {
+        "merged": "io.flutter.plugins.firebase.auth.firebase_auth-release-33:/animator/fragment_fade_exit.xml",
+        "source": "io.flutter.plugins.firebase.auth.firebase_auth-fragment-1.7.1-13:/animator/fragment_fade_exit.xml"
+    }
+]

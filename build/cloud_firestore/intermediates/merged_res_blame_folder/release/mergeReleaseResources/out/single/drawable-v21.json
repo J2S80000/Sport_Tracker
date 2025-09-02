@@ -1,0 +1,6 @@
+[
+    {
+        "merged": "io.flutter.plugins.firebase.firestore.cloud_firestore-release-28:/drawable-v21/notification_action_background.xml",
+        "source": "io.flutter.plugins.firebase.firestore.cloud_firestore-core-1.13.1-9:/drawable-v21/notification_action_background.xml"
+    }
+]
