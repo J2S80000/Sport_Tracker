@@ -1,0 +1,312 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Profile|x64">
+      <Configuration>Profile</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{564124B4-800F-37A4-90C1-5DC5623B38B5}</ProjectGuid>
+    <WindowsTargetPlatformVersion>10.0.22621.0</WindowsTargetPlatformVersion>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>x64</Platform>
+    <ProjectName>sport_tracker</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\build\windows\x64\runner\Debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">sport_tracker.dir\Debug\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">sport_tracker</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.exe</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\build\windows\x64\runner\Profile\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">sport_tracker.dir\Profile\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">sport_tracker</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">.exe</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\build\windows\x64\runner\Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">sport_tracker.dir\Release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">sport_tracker</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.exe</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</GenerateManifest>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\flutter\ephemeral;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\flutter\ephemeral\cpp_client_wrapper\include;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\flutter\ephemeral\.plugin_symlinks\cloud_firestore\windows\include;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\flutter\ephemeral\.plugin_symlinks\firebase_core\windows\include;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\flutter\ephemeral\.plugin_symlinks\firebase_auth\windows\include;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\flutter\ephemeral\.plugin_symlinks\permission_handler_windows\windows\include;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\build\windows\x64\extracted\firebase_cpp_sdk_windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>"4100"</DisableSpecificWarnings>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_HAS_EXCEPTIONS=0;_DEBUG;FLUTTER_VERSION="1.0.3";FLUTTER_VERSION_MAJOR=1;FLUTTER_VERSION_MINOR=0;FLUTTER_VERSION_PATCH=3;FLUTTER_VERSION_BUILD=0;NOMINMAX;UNICODE;_UNICODE;FLUTTER_PLUGIN_IMPL;CMAKE_INTDIR="Debug";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_HAS_EXCEPTIONS=0;FLUTTER_VERSION=\"1.0.3\";FLUTTER_VERSION_MAJOR=1;FLUTTER_VERSION_MINOR=0;FLUTTER_VERSION_PATCH=3;FLUTTER_VERSION_BUILD=0;NOMINMAX;UNICODE;_UNICODE;FLUTTER_PLUGIN_IMPL;CMAKE_INTDIR=\"Debug\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\flutter\ephemeral;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\flutter\ephemeral\cpp_client_wrapper\include;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\flutter\ephemeral\.plugin_symlinks\cloud_firestore\windows\include;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\flutter\ephemeral\.plugin_symlinks\firebase_core\windows\include;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\flutter\ephemeral\.plugin_symlinks\firebase_auth\windows\include;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\flutter\ephemeral\.plugin_symlinks\permission_handler_windows\windows\include;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\build\windows\x64\extracted\firebase_cpp_sdk_windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\flutter\ephemeral;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\flutter\ephemeral\cpp_client_wrapper\include;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\flutter\ephemeral\.plugin_symlinks\cloud_firestore\windows\include;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\flutter\ephemeral\.plugin_symlinks\firebase_core\windows\include;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\flutter\ephemeral\.plugin_symlinks\firebase_auth\windows\include;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\flutter\ephemeral\.plugin_symlinks\permission_handler_windows\windows\include;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\build\windows\x64\extracted\firebase_cpp_sdk_windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalDependencies>..\flutter\Debug\flutter_wrapper_app.lib;dwmapi.lib;..\plugins\cloud_firestore\Debug\cloud_firestore_plugin.lib;..\plugins\firebase_auth\Debug\firebase_auth_plugin.lib;..\plugins\firebase_core\Debug\firebase_core_plugin.lib;..\plugins\permission_handler_windows\Debug\permission_handler_windows_plugin.lib;..\extracted\firebase_cpp_sdk_windows\libs\windows\VS2019\MD\x64\Debug\firebase_firestore.lib;shell32.lib;Bcrypt.lib;DbgHelp.lib;advapi32.lib;ws2_32.lib;crypt32.lib;rpcrt4.lib;ole32.lib;..\extracted\firebase_cpp_sdk_windows\libs\windows\VS2019\MD\x64\Debug\firebase_app.lib;icu.lib;..\extracted\firebase_cpp_sdk_windows\libs\windows\VS2019\MD\x64\Debug\firebase_auth.lib;..\flutter\Debug\flutter_wrapper_plugin.lib;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\flutter\ephemeral\flutter_windows.dll.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>C:/Users/jessy/Desktop/Pro/Sport_Track/sport_tracker/build/windows/x64/runner/Debug/sport_tracker.lib</ImportLibrary>
+      <ProgramDataBaseFile>C:/Users/jessy/Desktop/Pro/Sport_Track/sport_tracker/build/windows/x64/runner/Debug/sport_tracker.pdb</ProgramDataBaseFile>
+      <SubSystem>Windows</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+    <Manifest>
+      <AdditionalManifestFiles>C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\runner\runner.exe.manifest;</AdditionalManifestFiles>
+    </Manifest>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\flutter\ephemeral;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\flutter\ephemeral\cpp_client_wrapper\include;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\flutter\ephemeral\.plugin_symlinks\cloud_firestore\windows\include;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\flutter\ephemeral\.plugin_symlinks\firebase_core\windows\include;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\flutter\ephemeral\.plugin_symlinks\firebase_auth\windows\include;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\flutter\ephemeral\.plugin_symlinks\permission_handler_windows\windows\include;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\build\windows\x64\extracted\firebase_cpp_sdk_windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <DisableSpecificWarnings>"4100"</DisableSpecificWarnings>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_HAS_EXCEPTIONS=0;FLUTTER_VERSION="1.0.3";FLUTTER_VERSION_MAJOR=1;FLUTTER_VERSION_MINOR=0;FLUTTER_VERSION_PATCH=3;FLUTTER_VERSION_BUILD=0;NOMINMAX;UNICODE;_UNICODE;FLUTTER_PLUGIN_IMPL;CMAKE_INTDIR="Profile";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_HAS_EXCEPTIONS=0;FLUTTER_VERSION=\"1.0.3\";FLUTTER_VERSION_MAJOR=1;FLUTTER_VERSION_MINOR=0;FLUTTER_VERSION_PATCH=3;FLUTTER_VERSION_BUILD=0;NOMINMAX;UNICODE;_UNICODE;FLUTTER_PLUGIN_IMPL;CMAKE_INTDIR=\"Profile\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\flutter\ephemeral;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\flutter\ephemeral\cpp_client_wrapper\include;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\flutter\ephemeral\.plugin_symlinks\cloud_firestore\windows\include;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\flutter\ephemeral\.plugin_symlinks\firebase_core\windows\include;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\flutter\ephemeral\.plugin_symlinks\firebase_auth\windows\include;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\flutter\ephemeral\.plugin_symlinks\permission_handler_windows\windows\include;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\build\windows\x64\extracted\firebase_cpp_sdk_windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\flutter\ephemeral;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\flutter\ephemeral\cpp_client_wrapper\include;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\flutter\ephemeral\.plugin_symlinks\cloud_firestore\windows\include;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\flutter\ephemeral\.plugin_symlinks\firebase_core\windows\include;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\flutter\ephemeral\.plugin_symlinks\firebase_auth\windows\include;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\flutter\ephemeral\.plugin_symlinks\permission_handler_windows\windows\include;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\build\windows\x64\extracted\firebase_cpp_sdk_windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalDependencies>..\flutter\Profile\flutter_wrapper_app.lib;dwmapi.lib;..\plugins\cloud_firestore\Profile\cloud_firestore_plugin.lib;..\plugins\firebase_auth\Profile\firebase_auth_plugin.lib;..\plugins\firebase_core\Profile\firebase_core_plugin.lib;..\plugins\permission_handler_windows\Profile\permission_handler_windows_plugin.lib;..\extracted\firebase_cpp_sdk_windows\libs\windows\VS2019\MD\x64\Debug\firebase_firestore.lib;shell32.lib;Bcrypt.lib;DbgHelp.lib;advapi32.lib;ws2_32.lib;crypt32.lib;rpcrt4.lib;ole32.lib;..\extracted\firebase_cpp_sdk_windows\libs\windows\VS2019\MD\x64\Debug\firebase_app.lib;icu.lib;..\extracted\firebase_cpp_sdk_windows\libs\windows\VS2019\MD\x64\Debug\firebase_auth.lib;..\flutter\Profile\flutter_wrapper_plugin.lib;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\flutter\ephemeral\flutter_windows.dll.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>C:/Users/jessy/Desktop/Pro/Sport_Track/sport_tracker/build/windows/x64/runner/Profile/sport_tracker.lib</ImportLibrary>
+      <ProgramDataBaseFile>C:/Users/jessy/Desktop/Pro/Sport_Track/sport_tracker/build/windows/x64/runner/Profile/sport_tracker.pdb</ProgramDataBaseFile>
+      <SubSystem>Windows</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+    <Manifest>
+      <AdditionalManifestFiles>C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\runner\runner.exe.manifest;</AdditionalManifestFiles>
+    </Manifest>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\flutter\ephemeral;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\flutter\ephemeral\cpp_client_wrapper\include;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\flutter\ephemeral\.plugin_symlinks\cloud_firestore\windows\include;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\flutter\ephemeral\.plugin_symlinks\firebase_core\windows\include;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\flutter\ephemeral\.plugin_symlinks\firebase_auth\windows\include;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\flutter\ephemeral\.plugin_symlinks\permission_handler_windows\windows\include;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\build\windows\x64\extracted\firebase_cpp_sdk_windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <DisableSpecificWarnings>"4100"</DisableSpecificWarnings>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_HAS_EXCEPTIONS=0;FLUTTER_VERSION="1.0.3";FLUTTER_VERSION_MAJOR=1;FLUTTER_VERSION_MINOR=0;FLUTTER_VERSION_PATCH=3;FLUTTER_VERSION_BUILD=0;NOMINMAX;UNICODE;_UNICODE;FLUTTER_PLUGIN_IMPL;CMAKE_INTDIR="Release";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_HAS_EXCEPTIONS=0;FLUTTER_VERSION=\"1.0.3\";FLUTTER_VERSION_MAJOR=1;FLUTTER_VERSION_MINOR=0;FLUTTER_VERSION_PATCH=3;FLUTTER_VERSION_BUILD=0;NOMINMAX;UNICODE;_UNICODE;FLUTTER_PLUGIN_IMPL;CMAKE_INTDIR=\"Release\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\flutter\ephemeral;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\flutter\ephemeral\cpp_client_wrapper\include;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\flutter\ephemeral\.plugin_symlinks\cloud_firestore\windows\include;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\flutter\ephemeral\.plugin_symlinks\firebase_core\windows\include;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\flutter\ephemeral\.plugin_symlinks\firebase_auth\windows\include;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\flutter\ephemeral\.plugin_symlinks\permission_handler_windows\windows\include;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\build\windows\x64\extracted\firebase_cpp_sdk_windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\flutter\ephemeral;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\flutter\ephemeral\cpp_client_wrapper\include;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\flutter\ephemeral\.plugin_symlinks\cloud_firestore\windows\include;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\flutter\ephemeral\.plugin_symlinks\firebase_core\windows\include;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\flutter\ephemeral\.plugin_symlinks\firebase_auth\windows\include;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\flutter\ephemeral\.plugin_symlinks\permission_handler_windows\windows\include;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\build\windows\x64\extracted\firebase_cpp_sdk_windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalDependencies>..\flutter\Release\flutter_wrapper_app.lib;dwmapi.lib;..\plugins\cloud_firestore\Release\cloud_firestore_plugin.lib;..\plugins\firebase_auth\Release\firebase_auth_plugin.lib;..\plugins\firebase_core\Release\firebase_core_plugin.lib;..\plugins\permission_handler_windows\Release\permission_handler_windows_plugin.lib;..\extracted\firebase_cpp_sdk_windows\libs\windows\VS2019\MD\x64\Release\firebase_firestore.lib;shell32.lib;Bcrypt.lib;DbgHelp.lib;advapi32.lib;ws2_32.lib;crypt32.lib;rpcrt4.lib;ole32.lib;..\extracted\firebase_cpp_sdk_windows\libs\windows\VS2019\MD\x64\Release\firebase_app.lib;icu.lib;..\extracted\firebase_cpp_sdk_windows\libs\windows\VS2019\MD\x64\Release\firebase_auth.lib;..\flutter\Release\flutter_wrapper_plugin.lib;C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\flutter\ephemeral\flutter_windows.dll.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>C:/Users/jessy/Desktop/Pro/Sport_Track/sport_tracker/build/windows/x64/runner/Release/sport_tracker.lib</ImportLibrary>
+      <ProgramDataBaseFile>C:/Users/jessy/Desktop/Pro/Sport_Track/sport_tracker/build/windows/x64/runner/Release/sport_tracker.pdb</ProgramDataBaseFile>
+      <SubSystem>Windows</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+    <Manifest>
+      <AdditionalManifestFiles>C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\runner\runner.exe.manifest;</AdditionalManifestFiles>
+    </Manifest>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\runner\CMakeLists.txt">
+      <StdOutEncoding>UTF-8</StdOutEncoding>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule C:/Users/jessy/Desktop/Pro/Sport_Track/sport_tracker/windows/runner/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -SC:/Users/jessy/Desktop/Pro/Sport_Track/sport_tracker/windows -BC:/Users/jessy/Desktop/Pro/Sport_Track/sport_tracker/build/windows/x64 --check-stamp-file C:/Users/jessy/Desktop/Pro/Sport_Track/sport_tracker/build/windows/x64/runner/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\build\windows\x64\runner\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">Building Custom Rule C:/Users/jessy/Desktop/Pro/Sport_Track/sport_tracker/windows/runner/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">setlocal
+"C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -SC:/Users/jessy/Desktop/Pro/Sport_Track/sport_tracker/windows -BC:/Users/jessy/Desktop/Pro/Sport_Track/sport_tracker/build/windows/x64 --check-stamp-file C:/Users/jessy/Desktop/Pro/Sport_Track/sport_tracker/build/windows/x64/runner/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\build\windows\x64\runner\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule C:/Users/jessy/Desktop/Pro/Sport_Track/sport_tracker/windows/runner/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -SC:/Users/jessy/Desktop/Pro/Sport_Track/sport_tracker/windows -BC:/Users/jessy/Desktop/Pro/Sport_Track/sport_tracker/build/windows/x64 --check-stamp-file C:/Users/jessy/Desktop/Pro/Sport_Track/sport_tracker/build/windows/x64/runner/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\build\windows\x64\runner\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\runner\flutter_window.cpp" />
+    <ClCompile Include="C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\runner\main.cpp" />
+    <ClCompile Include="C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\runner\utils.cpp" />
+    <ClCompile Include="C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\runner\win32_window.cpp" />
+    <ClCompile Include="C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\flutter\generated_plugin_registrant.cc" />
+    <ResourceCompile Include="C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\runner\Runner.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\build\windows\x64\ZERO_CHECK.vcxproj">
+      <Project>{1A747050-FDB5-3FCC-B902-B8A6AE6B5E56}</Project>
+      <Name>ZERO_CHECK</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\build\windows\x64\plugins\cloud_firestore\cloud_firestore_plugin.vcxproj">
+      <Project>{1F1CF633-7D2F-3B0A-BF92-74B3A7DF305D}</Project>
+      <Name>cloud_firestore_plugin</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\build\windows\x64\plugins\firebase_auth\firebase_auth_plugin.vcxproj">
+      <Project>{1D7CE434-88CF-39A8-93AC-C3656A4DCFFA}</Project>
+      <Name>firebase_auth_plugin</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\build\windows\x64\plugins\firebase_core\firebase_core_plugin.vcxproj">
+      <Project>{E3648E36-34BB-3EF3-B202-CA523B2CEE4D}</Project>
+      <Name>firebase_core_plugin</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\build\windows\x64\flutter\flutter_assemble.vcxproj">
+      <Project>{7F610B4E-D115-37FC-816E-4B12FCB9AC0A}</Project>
+      <Name>flutter_assemble</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\build\windows\x64\flutter\flutter_wrapper_app.vcxproj">
+      <Project>{717ADF5E-A9BE-3BFB-A132-3F003C6CD0F1}</Project>
+      <Name>flutter_wrapper_app</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\build\windows\x64\flutter\flutter_wrapper_plugin.vcxproj">
+      <Project>{A62951B1-FDB1-337D-8E3D-CC475D11CEE2}</Project>
+      <Name>flutter_wrapper_plugin</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\build\windows\x64\plugins\permission_handler_windows\permission_handler_windows_plugin.vcxproj">
+      <Project>{0340C3D1-8461-3430-A4EC-A3EEB566255F}</Project>
+      <Name>permission_handler_windows_plugin</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

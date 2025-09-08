@@ -56,7 +56,7 @@ class _ExerciseCardState extends State<ExerciseCard> {
             
             // Type d'exercice (clé, affichage traduit)
             DropdownButtonFormField<String>(
-              value: b.type, // clé, ex: "squat_barre"
+              value: ExerciseBlock.subTypeOptions.keys.contains(b.type) ? b.type : null,
               decoration: InputDecoration(labelText: tr('exercise_type')),
               items: ExerciseBlock.subTypeOptions.keys
                   .map((t) => DropdownMenuItem(
@@ -78,7 +78,8 @@ class _ExerciseCardState extends State<ExerciseCard> {
             // Sous-type (clé, affichage traduit)
             if (ExerciseBlock.subTypeOptions[b.type]!.isNotEmpty)
               DropdownButtonFormField<String>(
-                value: b.subType.isEmpty ? null : b.subType,
+                value: (ExerciseBlock.subTypeOptions[b.type] ?? []).contains(b.subType) ? b.subType : null,
+
                 decoration: InputDecoration(labelText: tr('sub_type')),
                 items: ExerciseBlock.subTypeOptions[b.type]!
                     .map((s) => DropdownMenuItem(

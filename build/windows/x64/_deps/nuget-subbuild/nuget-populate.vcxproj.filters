@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\build\windows\x64\_deps\nuget-subbuild\CMakeFiles\cbad4ea5e142f96d3be6012324e7f17a\nuget-populate-mkdir.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\build\windows\x64\_deps\nuget-subbuild\CMakeFiles\cbad4ea5e142f96d3be6012324e7f17a\nuget-populate-download.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\build\windows\x64\_deps\nuget-subbuild\CMakeFiles\cbad4ea5e142f96d3be6012324e7f17a\nuget-populate-update.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\build\windows\x64\_deps\nuget-subbuild\CMakeFiles\cbad4ea5e142f96d3be6012324e7f17a\nuget-populate-patch.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\build\windows\x64\_deps\nuget-subbuild\CMakeFiles\cbad4ea5e142f96d3be6012324e7f17a\nuget-populate-copyfile.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\build\windows\x64\_deps\nuget-subbuild\CMakeFiles\cbad4ea5e142f96d3be6012324e7f17a\nuget-populate-configure.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\build\windows\x64\_deps\nuget-subbuild\CMakeFiles\cbad4ea5e142f96d3be6012324e7f17a\nuget-populate-build.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\build\windows\x64\_deps\nuget-subbuild\CMakeFiles\cbad4ea5e142f96d3be6012324e7f17a\nuget-populate-install.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\build\windows\x64\_deps\nuget-subbuild\CMakeFiles\cbad4ea5e142f96d3be6012324e7f17a\nuget-populate-test.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\build\windows\x64\_deps\nuget-subbuild\CMakeFiles\411abce367e05b338dd73912f619e748\nuget-populate-complete.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\build\windows\x64\_deps\nuget-subbuild\CMakeFiles\dc9e970ff97a7bc62733f6a10553227a\nuget-populate.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\build\windows\x64\_deps\nuget-subbuild\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\build\windows\x64\_deps\nuget-subbuild\CMakeFiles\nuget-populate" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{AA25D56C-DEDD-305F-9F0B-460CA0645242}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

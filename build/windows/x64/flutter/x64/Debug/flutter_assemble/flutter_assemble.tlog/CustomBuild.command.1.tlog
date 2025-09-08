@@ -1,0 +1,28 @@
+^C:\USERS\JESSY\DESKTOP\PRO\SPORT_TRACK\SPORT_TRACKER\BUILD\WINDOWS\X64\CMAKEFILES\9A9A5C134CB7BD7D87168A7DADA3E3E3\FLUTTER_WINDOWS.DLL.RULE
+setlocal
+"C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E env FLUTTER_ROOT=C:\Users\jessy\Desktop\Flutter PROJECT_DIR=C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker FLUTTER_ROOT=C:\Users\jessy\Desktop\Flutter FLUTTER_EPHEMERAL_DIR=C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\windows\flutter\ephemeral PROJECT_DIR=C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker FLUTTER_TARGET=C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\lib\main.dart DART_DEFINES=RkxVVFRFUl9WRVJTSU9OPTMuMzIuNA==,RkxVVFRFUl9DSEFOTkVMPXN0YWJsZQ==,RkxVVFRFUl9HSVRfVVJMPWh0dHBzOi8vZ2l0aHViLmNvbS9mbHV0dGVyL2ZsdXR0ZXIuZ2l0,RkxVVFRFUl9GUkFNRVdPUktfUkVWSVNJT049NmZiYTI0NDdlOQ==,RkxVVFRFUl9FTkdJTkVfUkVWSVNJT049OGNkMTllNTA5ZA==,RkxVVFRFUl9EQVJUX1ZFUlNJT049My44LjE= DART_OBFUSCATION=false TRACK_WIDGET_CREATION=true TREE_SHAKE_ICONS=false PACKAGE_CONFIG=C:\Users\jessy\Desktop\Pro\Sport_Track\sport_tracker\.dart_tool\package_config.json C:/Users/jessy/Desktop/Flutter/packages/flutter_tools/bin/tool_backend.bat windows-x64 Debug
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\JESSY\DESKTOP\PRO\SPORT_TRACK\SPORT_TRACKER\BUILD\WINDOWS\X64\CMAKEFILES\801F3A4FFA8BC944C8BFEA1C27E50B4A\FLUTTER_ASSEMBLE.RULE
+setlocal
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\JESSY\DESKTOP\PRO\SPORT_TRACK\SPORT_TRACKER\WINDOWS\FLUTTER\CMAKELISTS.TXT
+setlocal
+"C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -SC:/Users/jessy/Desktop/Pro/Sport_Track/sport_tracker/windows -BC:/Users/jessy/Desktop/Pro/Sport_Track/sport_tracker/build/windows/x64 --check-stamp-file C:/Users/jessy/Desktop/Pro/Sport_Track/sport_tracker/build/windows/x64/flutter/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

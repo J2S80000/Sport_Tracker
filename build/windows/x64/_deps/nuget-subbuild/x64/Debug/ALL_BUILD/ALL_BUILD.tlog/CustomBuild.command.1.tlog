@@ -1,0 +1,10 @@
+^C:\USERS\JESSY\DESKTOP\PRO\SPORT_TRACK\SPORT_TRACKER\BUILD\WINDOWS\X64\_DEPS\NUGET-SUBBUILD\CMAKELISTS.TXT
+setlocal
+"C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -SC:/Users/jessy/Desktop/Pro/Sport_Track/sport_tracker/build/windows/x64/_deps/nuget-subbuild -BC:/Users/jessy/Desktop/Pro/Sport_Track/sport_tracker/build/windows/x64/_deps/nuget-subbuild --check-stamp-file C:/Users/jessy/Desktop/Pro/Sport_Track/sport_tracker/build/windows/x64/_deps/nuget-subbuild/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

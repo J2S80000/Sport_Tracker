@@ -1,7 +1,7 @@
 {
   "program_of_the_day": "Program of the Day",
   "no_program_today": "No program for today.",
-  "steps_today": "Not recorded today",
+  "steps_today": "Step recorded today",
   "calories_burned": "Calories burned",
   "refresh_program": "Refresh program",
   "recalculate_calories": "Recalculate calories (steps + exercises)",
@@ -185,7 +185,7 @@
   "calories_consumed": "Calories consumed",
   "calorie_deficit": "Calorie deficit",
   "calorie_surplus": "Calorie surplus",
-  "deficit_description": "You are in a deficit of {0} kcal, favorable to weight loss",
-  "surplus_description": "You have a surplus of {0} kcal, be careful of weight gain",
+  "deficit_description": "You are in a caloric deficit, favorable to weight loss",
+  "surplus_description": "You have a caloric surplus, be careful of weight gain",
   "save": "Save"
 }

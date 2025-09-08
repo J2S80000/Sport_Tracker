@@ -1,0 +1,15 @@
+# Target labels
+ nuget-populate
+# Source files and their labels
+C:/Users/jessy/Desktop/Pro/Sport_Track/sport_tracker/build/windows/x64/_deps/nuget-subbuild/CMakeFiles/nuget-populate
+C:/Users/jessy/Desktop/Pro/Sport_Track/sport_tracker/build/windows/x64/_deps/nuget-subbuild/CMakeFiles/dc9e970ff97a7bc62733f6a10553227a/nuget-populate.rule
+C:/Users/jessy/Desktop/Pro/Sport_Track/sport_tracker/build/windows/x64/_deps/nuget-subbuild/CMakeFiles/411abce367e05b338dd73912f619e748/nuget-populate-complete.rule
+C:/Users/jessy/Desktop/Pro/Sport_Track/sport_tracker/build/windows/x64/_deps/nuget-subbuild/CMakeFiles/cbad4ea5e142f96d3be6012324e7f17a/nuget-populate-build.rule
+C:/Users/jessy/Desktop/Pro/Sport_Track/sport_tracker/build/windows/x64/_deps/nuget-subbuild/CMakeFiles/cbad4ea5e142f96d3be6012324e7f17a/nuget-populate-configure.rule
+C:/Users/jessy/Desktop/Pro/Sport_Track/sport_tracker/build/windows/x64/_deps/nuget-subbuild/CMakeFiles/cbad4ea5e142f96d3be6012324e7f17a/nuget-populate-copyfile.rule
+C:/Users/jessy/Desktop/Pro/Sport_Track/sport_tracker/build/windows/x64/_deps/nuget-subbuild/CMakeFiles/cbad4ea5e142f96d3be6012324e7f17a/nuget-populate-download.rule
+C:/Users/jessy/Desktop/Pro/Sport_Track/sport_tracker/build/windows/x64/_deps/nuget-subbuild/CMakeFiles/cbad4ea5e142f96d3be6012324e7f17a/nuget-populate-install.rule
+C:/Users/jessy/Desktop/Pro/Sport_Track/sport_tracker/build/windows/x64/_deps/nuget-subbuild/CMakeFiles/cbad4ea5e142f96d3be6012324e7f17a/nuget-populate-mkdir.rule
+C:/Users/jessy/Desktop/Pro/Sport_Track/sport_tracker/build/windows/x64/_deps/nuget-subbuild/CMakeFiles/cbad4ea5e142f96d3be6012324e7f17a/nuget-populate-patch.rule
+C:/Users/jessy/Desktop/Pro/Sport_Track/sport_tracker/build/windows/x64/_deps/nuget-subbuild/CMakeFiles/cbad4ea5e142f96d3be6012324e7f17a/nuget-populate-test.rule
+C:/Users/jessy/Desktop/Pro/Sport_Track/sport_tracker/build/windows/x64/_deps/nuget-subbuild/CMakeFiles/cbad4ea5e142f96d3be6012324e7f17a/nuget-populate-update.rule

@@ -1,7 +1,7 @@
 {
   "program_of_the_day": "Programa del día",
   "no_program_today": "Ningún programa para hoy.",
-  "steps_today": "No registrado hoy",
+  "steps_today": "Paso registrado hoy",
   "calories_burned": "Calorías quemadas",
   "refresh_program": "Actualizar programa",
   "recalculate_calories": "Recalcular calorías (pasos + ejercicios)",
@@ -185,7 +185,7 @@
   "calories_consumed": "Calorías consumidas",
   "calorie_deficit": "Déficit calórico",
   "calorie_surplus": "Superávit calórico",
-  "deficit_description": "Estás en un déficit de {0} kcal, favorable para la pérdida de peso",
-  "surplus_description": "Tienes un superávit de {0} kcal, cuidado con el aumento de peso",
+  "deficit_description": "Estás en un déficit calórico, favorable para la pérdida de peso",
+  "surplus_description": "Tienes un superávit calórico, cuidado con el aumento de peso",
   "save": "Guardar"
 }

@@ -239,37 +239,46 @@ class ExerciseBlock {
     }
   }
 
-  int _getDurationEstimate() {
-    final regExp = RegExp(r'(\d+)');
-    final match = regExp.firstMatch(duration);
-    if (match != null) {
-      final int? parsed = int.tryParse(match.group(0)!);
-      if (parsed != null && parsed > 0) return parsed;
+int _getDurationEstimate() {
+  final regExp = RegExp(r'(\d+)');
+  final match = regExp.firstMatch(duration);
+
+  if (match != null) {
+    final int? parsed = int.tryParse(match.group(0)!);
+    if (parsed != null && parsed > 0) {
+      if (normalize(type) == 'street_workout') {
+        return (parsed / 60).ceil(); // secondes → minutes
+      }
+      return parsed; // déjà en minutes
     }
-
-    final int? reps = int.tryParse(repetitions);
-    if (reps != null && reps > 0) return (reps / 10).ceil();
-
-    if (distance.trim().isNotEmpty) {
-      final mins = _estimateMinutesFromDistance(type, intensity, distance);
-      if (mins > 0) return mins;
-    }
-
-    return 1;
   }
+
+  // 🔥 Ici on prend en compte reps × séries directement
+  final int? reps = int.tryParse(repetitions);
+  final int? ser = int.tryParse(series);
+  if (reps != null && reps > 0) {
+    final totalReps = reps * (ser ?? 1);
+    return (totalReps / 10).ceil();
+  }
+
+  if (distance.trim().isNotEmpty) {
+    final mins = _estimateMinutesFromDistance(type, intensity, distance);
+    if (mins > 0) return mins;
+  }
+
+  return 1;
+}
+
 
   double estimateCalories({required double poids}) {
-    final met = _getMET(type, subType, intensity);
-    final durationMin = _getDurationEstimate();
-    int seriesCount = 1;
-    if (series.trim().isNotEmpty) {
-      seriesCount = int.tryParse(series) ?? 1;
-      if (seriesCount < 1) seriesCount = 1;
-    }
-    final totalMinutes = durationMin * seriesCount;
+  final met = _getMET(type, subType, intensity);
 
-    return met * poids * (totalMinutes / 60);
-  }
+  // Ici, on considère que _getDurationEstimate() renvoie déjà
+  // la durée totale (toutes les séries incluses)
+  final totalMinutes = _getDurationEstimate();
+
+  return met * poids * (totalMinutes / 60);
+}
 
   factory ExerciseBlock.fromMap(Map<String, dynamic> map) {
     final block = ExerciseBlock();

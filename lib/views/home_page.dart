@@ -47,6 +47,7 @@ double calculateCalorieDeficit() {
   final caloriesIngerees = (programData?['calories_ingerees'] ?? 0).toDouble();
   
   return caloriesDepensees - caloriesIngerees; // Positif = déficit, négatif = surplus
+  print('Valeur du déficit: ${caloriesDepensees - caloriesIngerees}');
 }
 
 @override
@@ -367,8 +368,8 @@ Widget build(BuildContext context) {
                                     '${(programData?['calories_pas'] ?? 0) + (programData?['calories_exercices'] ?? 0)} kcal',
                                     style: const TextStyle(fontSize: 20),
                                   ),
-                                  Text("👟 : ${programData?['calories_pas'] ?? 0} kcal"),
-                                  Text("Exos : ${programData?['calories_exercices'] ?? 0} kcal"),
+                                  Text("🚶 : ${programData?['calories_pas'] ?? 0} kcal"),
+Text("🏋️ : ${programData?['calories_exercices'] ?? 0} kcal"),
                                 ],
                               )
                             ],
@@ -414,13 +415,17 @@ Widget build(BuildContext context) {
     ),
   ),
   const SizedBox(width: 12),
-  ElevatedButton(
-    onPressed: () async {
-      final calories = int.tryParse(_caloriesController.text) ?? 0;
-      await updateCaloriesIngerees(calories);
-    },
-    child: Text(tr('save')),
-  ),
+ElevatedButton(
+  onPressed: () async {
+    final calories = int.tryParse(_caloriesController.text) ?? 0;
+    await updateCaloriesIngerees(calories);
+    setState(() {
+      _caloriesController.clear();
+    });
+    FocusScope.of(context).unfocus(); // Retire le focus du champ
+  },
+  child: Text(tr('save')),
+),
 ],
                               ),
                             ],
@@ -548,16 +553,19 @@ Widget build(BuildContext context) {
                                             ],
                                           ),
                                           const SizedBox(height: 4),
-                                          Text(
-                                            deficit > 0 
-                                              ? 'Vous êtes en déficit de ${deficit.toInt()} kcal, favorable à la perte de poids'
-                                              : 'Vous avez un surplus de ${deficit.abs().toInt()} kcal, attention à la prise de poids',
-                                            style: const TextStyle(fontSize: 12,color: Colors.black54),
-                                          ),
+
+Text(
+  deficit < 0 
+  ? tr('deficit_description', args: [deficit.abs().toInt().toString()])
+  : tr('surplus_description', args: [deficit.toInt().toString()]),
+  style: const TextStyle(fontSize: 12, color: Colors.black54),
+)
                                         ],
                                       ),
                                     );
+                                    
                                   },
+                                  
                                 ),
                               ],
                             ),
@@ -653,7 +661,7 @@ Widget build(BuildContext context) {
                                       CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      exercice['type'] ?? 'Type inconnu',
+                                      tr(exercice['type'] ?? 'unknown_type'),
                                       style: const TextStyle(
                                           fontSize: 18,
                                           fontWeight: FontWeight.bold),
@@ -661,7 +669,7 @@ Widget build(BuildContext context) {
                                     const SizedBox(height: 6),
                                     if ((exercice['subType'] ?? '')
                                         .isNotEmpty)
-                                      Text("Sous-type : ${exercice['subType']}"),
+                                      Text("Sous-type : ${tr(exercice['subType'])}"),
                                     if ((exercice['series'] ?? '')
                                         .isNotEmpty)
                                       Text("Séries : ${exercice['series']}"),
@@ -677,7 +685,7 @@ Widget build(BuildContext context) {
                                       Text("Distance : ${exercice['distance']}"),
                                     if ((exercice['intensity'] ?? '')
                                         .isNotEmpty)
-                                      Text("Intensité : ${exercice['intensity']}"),
+                                      Text("Intensité : ${tr(exercice['intensity'])}"),
                                     if ((exercice['restTime'] ?? '')
                                         .isNotEmpty)
                                       Text("Repos : ${exercice['restTime']}"),
@@ -751,6 +759,7 @@ Widget build(BuildContext context) {
               ),
   );
 }
+
 int calculerCaloriesExercices(List exercices, {required double poids}) {
   double totalExos = 0;
   for (final ex in exercices) {

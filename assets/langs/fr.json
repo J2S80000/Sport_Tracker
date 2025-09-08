@@ -205,8 +205,8 @@
   "calories_consumed": "Calories consommées",
   "calorie_deficit": "Déficit calorique",
   "calorie_surplus": "Surplus calorique",
-  "deficit_description": "Vous êtes en déficit de {0} kcal, favorable à la perte de poids",
-  "surplus_description": "Vous avez un surplus de {0} kcal, attention à la prise de poids",
+  "deficit_description": "Vous êtes en déficit calorique, favorable à la perte de poids",
+  "surplus_description": "Vous avez un surplus calorique, attention à la prise de poids",
   "save": "Sauvegarder"
 }
 
