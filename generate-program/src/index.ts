@@ -31,7 +31,9 @@ interface BatchBody extends BodyIn {
 }
 
 const CHUNK = 8 // Nombre de jours max par chunk envoyé à l’IA
-const MODEL = "deepseek/deepseek-r1-distill-llama-70b:free"
+const MODEL = "openai/gpt-3.5-turbo" // OpenRouter: GPT-3.5 Turbo (free tier available)
+const GROQ_MODEL = "mixtral-8x7b-32768" // Groq: Mixtral 8x7B (confirmed available)
+const GEMINI_MODEL = "gemini-1.5-flash" // Google Gemini: Flash (free tier)
 
 // Helpers utilitaires...
 const formatDate = (d: Date | string) =>
@@ -335,10 +337,116 @@ async function tryOpenAIRequest(
   throw lastError;
 }
 
+// ============= MULTI-PROVIDER FAILOVER =============
+async function callGroq(apiKey: string, prompt: string, isArray: boolean = false) {
+  const openai = new OpenAI({
+    baseURL: 'https://api.groq.com/openai/v1',
+    apiKey
+  });
+  
+  const response = await openai.chat.completions.create({
+    model: GROQ_MODEL,
+    messages: [{ role: 'user', content: prompt }],
+    temperature: isArray ? 0.9 : 0.7,
+    max_tokens: isArray ? 4096 : 2048
+  });
+  
+  return response;
+}
+
+async function callGemini(apiKey: string, prompt: string, isArray: boolean = false) {
+  const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      contents: [{
+        parts: [{
+          text: prompt
+        }]
+      }],
+      generationConfig: {
+        temperature: isArray ? 0.9 : 0.7,
+        maxOutputTokens: isArray ? 4096 : 2048,
+      }
+    })
+  });
+
+  if (!response.ok) {
+    throw new Error(`Gemini API error: ${response.status} ${response.statusText}`);
+  }
+
+  const data = await response.json() as any;
+  return {
+    choices: [{
+      message: {
+        content: data.candidates?.[0]?.content?.parts?.[0]?.text ?? ''
+      }
+    }]
+  };
+}
+
+async function tryMultiProviderRequest(
+  prompt: string,
+  isArray: boolean,
+  env: { OPENROUTER_API_KEY: string, OPENROUTER_API_KEYB: string, OPENROUTER_API_KEYC: string, GROQ_API_KEY?: string, GEMINI_API_KEY?: string }
+) {
+  const openrouterKeys = [
+    env.OPENROUTER_API_KEY,
+    env.OPENROUTER_API_KEYB,
+    env.OPENROUTER_API_KEYC
+  ].filter(Boolean);
+
+  // Étape 1: Essayer OpenRouter
+  try {
+    console.log('🔄 Trying OpenRouter...');
+    const response = await tryOpenAIRequest(
+      async (openai: OpenAI) => await openai.chat.completions.create({
+        model: MODEL,
+        messages: [{ role: 'user', content: prompt }],
+        temperature: isArray ? 0.9 : 0.7,
+        max_tokens: isArray ? 4096 : 2048
+      }),
+      openrouterKeys
+    );
+    console.log('✅ OpenRouter success');
+    return { ...response, provider: 'OpenRouter' };
+  } catch (e) {
+    console.warn('❌ OpenRouter failed:', e);
+  }
+
+  // Étape 2: Essayer Groq
+  if (env.GROQ_API_KEY) {
+    try {
+      console.log('🔄 Trying Groq...');
+      const response = await callGroq(env.GROQ_API_KEY, prompt, isArray);
+      console.log('✅ Groq success');
+      return { ...response, provider: 'Groq' };
+    } catch (e) {
+      console.warn('❌ Groq failed:', e);
+    }
+  }
+
+  // Étape 3: Essayer Google Gemini
+  if (env.GEMINI_API_KEY) {
+    try {
+      console.log('🔄 Trying Google Gemini...');
+      const response = await callGemini(env.GEMINI_API_KEY, prompt, isArray);
+      console.log('✅ Google Gemini success');
+      return { ...response, provider: 'GoogleGemini' };
+    } catch (e) {
+      console.warn('❌ Google Gemini failed:', e);
+    }
+  }
+
+  throw new Error('❌ All AI providers failed');
+}
+
 // ============= HANDLER PRINCIPAL =============
 export default {
   
-  async fetch(req: Request, env: { OPENROUTER_API_KEY: string, OPENROUTER_API_KEYB: string, OPENROUTER_API_KEYC: string }) {
+  async fetch(req: Request, env: any) {
     
     const wantsHtml = req.headers.get('Accept')?.includes('text/html');
     const cors = {
@@ -346,26 +454,37 @@ export default {
       'Access-Control-Allow-Methods': 'POST, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type'
     }
-    if (req.method === 'OPTIONS') return new Response(null, { headers: cors })
-    if (req.method !== 'POST') return new Response('Use POST', { status: 405, headers: cors })
-
-    const raw = await req.json().catch(() => ({}))
-    const body = raw as BatchBody
-    if (!body.uid) return new Response('uid missing', { status: 400, headers: cors })
-
-    const objectif = body.objectif || 'Maintenir le rythme'
-    const stats = body.stats || {}
-
-    const apiKeys = [
-  env.OPENROUTER_API_KEY,
-  env.OPENROUTER_API_KEYB,
-  env.OPENROUTER_API_KEYC
-].filter(Boolean);
-
+    
     try {
+      if (req.method === 'OPTIONS') return new Response(null, { headers: cors })
+      if (req.method !== 'POST') return new Response('Use POST', { status: 405, headers: cors })
+
+      const raw = await req.json().catch(() => ({}))
+      const body = raw as BatchBody
+      
+      if (!body.uid) {
+        return new Response(JSON.stringify({ error: 'uid missing' }), { status: 400, headers: { ...cors, 'Content-Type': 'application/json' } })
+      }
+
+      // Vérifier les clés API
+      if (!env.OPENROUTER_API_KEY && !env.OPENROUTER_API_KEYB && !env.OPENROUTER_API_KEYC && !env.GROQ_API_KEY && !env.GEMINI_API_KEY) {
+        console.error('❌ ERREUR: Aucune clé API configurée');
+        return new Response(JSON.stringify({ error: 'No API keys configured' }), { status: 500, headers: { ...cors, 'Content-Type': 'application/json' } })
+      }
+
+      const objectif = body.objectif || 'Maintenir le rythme'
+      const stats = body.stats || {}
+
+      console.log('📥 Request reçue:', { uid: body.uid, range: body.range, startDate: body.startDate });
+      console.log('🔑 Clés disponibles:', {
+        openrouter: !!env.OPENROUTER_API_KEY,
+        groq: !!env.GROQ_API_KEY,
+        gemini: !!env.GEMINI_API_KEY
+      });
+
       // --- AUTO chunking : week / month ---
       if (body.range === 'week' || body.range === 'month') {
-        const totalDays = body.range === 'month' ? 14 : 7  // Changement: 30 jours → 14 jours
+        const totalDays = body.range === 'month' ? 14 : 7
         let remaining = totalDays
         let cursor = formatDate(body.startDate || new Date())
         let all: Program[] = []
@@ -373,15 +492,7 @@ export default {
         while (remaining > 0) {
           const count = Math.min(CHUNK, remaining)
           const prompt = buildBatchPrompt(stats, objectif, count, cursor)
-          const res = await tryOpenAIRequest(
-  async (openai: OpenAI) => await openai.chat.completions.create({
-    model: MODEL,
-    messages: [{ role: 'user', content: prompt }],
-    temperature: 0.9,
-    max_tokens: 4096
-  }),
-  apiKeys
-);
+          const res = await tryMultiProviderRequest(prompt, true, env);
 
 // AJOUTE DU LOG
 console.log("=== RAW AI RESPONSE ===", JSON.stringify(res, null, 2));
@@ -391,6 +502,7 @@ answer = cleanAIResponse(answer);
 answer = answer.replace(/^```json\s*|\s*```$/g, '').trim();
 
 console.log("=== AI ANSWER CLEANED ===", answer);
+console.log("=== PROVIDER USED ===", res.provider);
 
 const chunk = safeJsonParse(answer);
 
@@ -427,14 +539,7 @@ cursor = addDays(cursor, count);
       // --- JOURNALIER ---
       const singleBody = body as BodyIn
       const prompt = buildPrompt(stats, objectif, singleBody)
-      const r = await tryOpenAIRequest(
-  async (openai: OpenAI) => await openai.chat.completions.create({
-    model: MODEL,
-    messages: [{ role: 'user', content: prompt }],
-    temperature: 0.7
-  }),
-  apiKeys
-);
+      const r = await tryMultiProviderRequest(prompt, false, env);
       let answer = r.choices?.[0]?.message?.content ?? '{}'
       answer = cleanAIResponse(answer)
       answer = answer.replace(/^```json\s*|\s*```$/g, '').trim()
@@ -460,7 +565,13 @@ cursor = addDays(cursor, count);
       );
     } catch (e) {
       console.error('❌ ERREUR IA :', e)
-      return new Response('Erreur serveur: ' + e, { status: 500, headers: cors })
+      const errorMsg = e instanceof Error ? e.message : String(e);
+      const errorDetails = {
+        error: errorMsg,
+        timestamp: new Date().toISOString(),
+        provider: 'unknown'
+      };
+      return new Response(JSON.stringify(errorDetails), { status: 500, headers: { ...cors, 'Content-Type': 'application/json' } })
     }
   }
 }
