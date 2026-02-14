@@ -1,2 +1,0 @@
-C:/Users/jessy/Desktop/Pro/Sport_Track/sport_tracker/build/.cxx/Debug/2154s5h0/x86/CMakeFiles/edit_cache.dir
-C:/Users/jessy/Desktop/Pro/Sport_Track/sport_tracker/build/.cxx/Debug/2154s5h0/x86/CMakeFiles/rebuild_cache.dir

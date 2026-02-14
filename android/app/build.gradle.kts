@@ -27,7 +27,7 @@ android {
         applicationId = "com.example.sport_tracker"
 
         // ✅ Correction ici aussi : PAS de .set(...)
-        minSdk = 23
+        minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName

@@ -34,6 +34,7 @@ generate-program/wrangler.jsonc
 .flutter-plugins-dependencies
 .pub-cache/
 .pub/
+build/
 
 # Symbolication related
 app.*.symbols

@@ -1,3 +1,4 @@
+// calendar_view_model.dart
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -27,6 +28,34 @@ class CalendarViewModel extends ChangeNotifier {
 
   String _programCollectionPath(String uid) =>
       'users/$uid/programmes'; // raccourci
+  Future<void> selectDay(DateTime selected, DateTime focused) async {
+    // 1. On met à jour l'UI instantanément UNE SEULE FOIS
+    selectedDay = normalizeDate(selected);
+    focusedDay = focused;
+    selectedProgram = null; // On vide le programme précédent pour éviter un affichage fantôme
+    notifyListeners(); 
+
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return;
+
+    // 2. On charge les données Firebase
+    final key = _dateKey(selected);
+    final snap = await FirebaseFirestore.instance
+        .collection(_programCollectionPath(uid))
+        .where('jour', isEqualTo: key)
+        .limit(1)
+        .get();
+
+    // 3. On met à jour l'état avec le résultat UNE SEULE FOIS
+    if (snap.docs.isNotEmpty) {
+      selectedProgram = snap.docs.first.data();
+      _currentProgramId = snap.docs.first.id;
+    } else {
+      selectedProgram = null;
+      _currentProgramId = null;
+    }
+    notifyListeners(); 
+  }
 
   /* ──────────── IA : Génération batch ──────────── */
 
@@ -41,7 +70,7 @@ class CalendarViewModel extends ChangeNotifier {
 
     try {
       final uri = Uri.parse(
-          'https://generate-program.sporttracker.workers.dev/generate-programs');
+          'https://generate-program.quizexec.workers.dev');
       final resp = await http.post(
         uri,
         headers: {'Content-Type': 'application/json'},
@@ -138,14 +167,16 @@ class CalendarViewModel extends ChangeNotifier {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) return;
 
+    // ✅ Assigner IMMÉDIATEMENT pour que la sélection soit visible
+    selectedDay = normalizeDate(date);
+    notifyListeners();
+
     final key = _dateKey(date);
     final snap = await FirebaseFirestore.instance
         .collection(_programCollectionPath(uid))
         .where('jour', isEqualTo: key)
         .limit(1)
         .get();
-
-    selectedDay = normalizeDate(date);
 
     if (snap.docs.isNotEmpty) {
       selectedProgram = snap.docs.first.data();

@@ -1,3 +1,4 @@
+// calendar_page.dart
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -9,6 +10,10 @@ class CaalendarPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final defaultTextColor = isDark ? Colors.white : Colors.black;
+    final weekendTextColor = isDark ? Colors.grey[300] : Colors.redAccent;
+    final outsideTextColor = isDark ? Colors.grey[700] : Colors.grey;
     return ChangeNotifierProvider(
       create: (_) => CalendarViewModel()..loadCalendarColors(),
       child: Consumer<CalendarViewModel>(
@@ -20,34 +25,20 @@ class CaalendarPage extends StatelessWidget {
               children: [
                 TableCalendar(
   firstDay: DateTime.utc(2025, 1, 1),
-  lastDay: DateTime.utc(2026, 1, 1),
+  lastDay: DateTime.utc(2027, 1, 1),
   focusedDay: vm.focusedDay,
   selectedDayPredicate: (day) => isSameDay(vm.selectedDay, day),
   onDaySelected: (selectedDay, focusedDay) {
-    vm.loadProgramForDate(selectedDay);
-    vm.setFocusedDay(focusedDay);
+    vm.selectDay(selectedDay, focusedDay);
   },
   calendarStyle: CalendarStyle(
-    // ✅ Par défaut, texte adaptatif
-    defaultTextStyle: TextStyle(
-      color: Theme.of(context).brightness == Brightness.dark
-          ? Colors.white
-          : Colors.black,
-    ),
-    weekendTextStyle: TextStyle(
-      color: Theme.of(context).brightness == Brightness.dark
-          ? Colors.grey[300]
-          : Colors.redAccent,
-    ),
-    outsideTextStyle: TextStyle(
-      color: Theme.of(context).brightness == Brightness.dark
-          ? Colors.grey[700]
-          : Colors.grey,
-    ),
-    todayDecoration: BoxDecoration(
-      color: Colors.blue.withOpacity(0.5),
-      shape: BoxShape.circle,
-    ),
+                    defaultTextStyle: TextStyle(color: defaultTextColor),
+                    weekendTextStyle: TextStyle(color: weekendTextColor),
+                    outsideTextStyle: TextStyle(color: outsideTextColor),
+                    todayDecoration: BoxDecoration(
+                      color: Colors.blue.withOpacity(0.5),
+                      shape: BoxShape.circle,
+                    ),
     selectedDecoration: BoxDecoration(
       color: Colors.blue,
       shape: BoxShape.circle,
@@ -65,11 +56,8 @@ class CaalendarPage extends StatelessWidget {
         child: Text(
           '${day.day}',
           style: TextStyle(
-            color: color != null
-                ? Colors.white
-                : Theme.of(context).brightness == Brightness.dark
-                    ? Colors.white
-                    : Colors.black,
+            color:color != null
+                ? Colors.white: defaultTextColor,
           ),
         ),
       );
@@ -136,7 +124,7 @@ else
       context: context,
       initialDate: vm.selectedDay ?? DateTime.now(),
       firstDate: DateTime(2025),
-      lastDate: DateTime(2026),
+      lastDate: DateTime(2027),
     );
 
     if (picked != null) {

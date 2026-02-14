@@ -1,4 +1,0 @@
-#Tue Sep 09 00:13:23 CEST 2025
-base.0=C\:\\Users\\jessy\\Desktop\\Pro\\Sport_Track\\sport_tracker\\build\\app\\intermediates\\dex\\release\\minifyReleaseWithR8\\classes.dex
-path.0=classes.dex
-renamed.0=classes.dex
