@@ -1,0 +1,45 @@
+{
+  "name": "flutter-cursor-plugin",
+  "displayName": "Flutter Cursor Plugin",
+  "version": "2.0.0",
+  "description": "Open-source Cursor plugin for end-to-end Flutter development and testing with Dart MCP, Figma MCP, practical architecture patterns, and reliable test workflows.",
+  "author": {
+    "name": "Aleksandr Lozhkovoi",
+    "email": "lozhkovoi@gmail.com"
+  },
+  "repository": "https://github.com/Wreos/flutter-cursor-plugin",
+  "homepage": "https://github.com/Wreos/flutter-cursor-plugin",
+  "license": "MIT",
+  "logo": "assets/logo.svg",
+  "category": "developer-tools",
+  "tags": [
+    "flutter",
+    "dart",
+    "testing",
+    "mobile",
+    "security",
+    "mcp",
+    "upgrade"
+  ],
+  "keywords": [
+    "dart",
+    "flutter",
+    "testing",
+    "clean architecture",
+    "bloc",
+    "cubit",
+    "patrol",
+    "firebase",
+    "dependency upgrade",
+    "github actions",
+    "security",
+    "effective dart",
+    "dart mcp",
+    "figma mcp"
+  ],
+  "rules": "./rules/",
+  "skills": "./skills/",
+  "agents": "./agents/",
+  "commands": "./commands/",
+  "mcpServers": "mcp.json"
+}

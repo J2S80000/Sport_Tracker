@@ -1,0 +1,34 @@
+---
+description: Effective Dart alignment for style, documentation, usage, and design.
+alwaysApply: false
+globs: ["lib/**/*.dart", "test/**/*.dart", "**/*.dart"]
+---
+
+# Effective Dart
+
+Align generated and edited Dart code with the official Effective Dart guidance:
+- https://dart.dev/effective-dart
+
+## Style
+
+- Follow idiomatic naming and formatting conventions.
+- Keep imports clean and avoid unused imports.
+- Prefer readable, consistent code over clever shortcuts.
+
+## Documentation
+
+- Document public APIs with clear doc comments.
+- Keep comments focused on intent and non-obvious behavior.
+- Avoid comments that only restate the code.
+
+## Usage
+
+- Prefer sound null-safe patterns and explicit types where clarity matters.
+- Use async/await and error handling patterns consistently.
+- Keep APIs small and predictable.
+
+## Design
+
+- Prefer composition over deep inheritance where practical.
+- Keep classes focused on one responsibility.
+- Minimize side effects and hidden coupling.

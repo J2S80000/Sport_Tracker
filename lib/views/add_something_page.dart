@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'add_performance_page.dart';
 import 'add_program_page.dart';
+import 'run_tracking_page.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 class AddSomethingPage extends StatelessWidget {
@@ -16,6 +17,19 @@ class AddSomethingPage extends StatelessWidget {
           children: [
             ElevatedButton.icon(
               icon: const Icon(Icons.directions_run),
+              label: Text(tr('run_tracking_start_button')),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const RunTrackingPage(),
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton.icon(
+              icon: const Icon(Icons.add_chart),
               label: Text(tr('add_performance')),
               onPressed: () {
                 Navigator.push(

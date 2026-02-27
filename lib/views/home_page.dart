@@ -1,21 +1,21 @@
+import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:SportTracker/views/layout_page.dart';
-import 'package:pedometer/pedometer.dart';
+import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:SportTracker/models/exercise_block.dart';
+import 'package:SportTracker/services/step_counter_service.dart';
+import 'package:SportTracker/views/run_route_viewer_page.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 // home_page.dart
 
 
 int? stepCount;
-Stream<StepCount>? _stepCountStream;
 int? totalStepsToday;
-bool hasFirstEventProcessed = false;
-int? stepsAtStartOfDay;
 
 late String todaybd;
 DateTime? currentDayDate;
@@ -32,12 +32,11 @@ int calculateBMR(int poidsKg) {
   return (poidsKg * 24).round();
 }
 
-class _HomePageState extends State<HomePage> {
-    Stream<StepCount>? _stepCountStream;
+class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
+  Timer? _stepRefreshTimer;
   int? totalStepsToday;
-  int? stepsAtStartOfDay;
   late TextEditingController _caloriesController;
-  String todaybd = DateTime.now().toIso8601String().substring(0, 10); // "2025-06-21"
+  String todaybd = DateTime.now().toIso8601String().substring(0, 10);
   Map<String, dynamic>? programData;
   bool isLoading = true;
 double calculateCalorieDeficit() {
@@ -53,6 +52,7 @@ double calculateCalorieDeficit() {
 @override
 void initState() {
   super.initState();
+  WidgetsBinding.instance.addObserver(this);
 
   _caloriesController = TextEditingController();
   final now = DateTime.now();
@@ -60,72 +60,58 @@ void initState() {
   currentDayDate = DateTime(now.year, now.month, now.day);
 
   fetchTodayProgram();
-  initStepCounter();
+  _initSteps();
 }
 
+@override
 void dispose() {
+  WidgetsBinding.instance.removeObserver(this);
+  _stepRefreshTimer?.cancel();
+  FlutterForegroundTask.removeTaskDataCallback(_onServiceData);
   _caloriesController.dispose();
   super.dispose();
 }
 
-
-void onStepCount(StepCount event) async {
-  final now = DateTime.now();
-  final currentDay = DateTime(now.year, now.month, now.day);
-  final prefs = await SharedPreferences.getInstance();
-  final storedDate = prefs.getString('stepDate');
-  final storedStart = prefs.getInt('stepStart');
-
-  if (storedDate == todaybd && storedStart != null && stepsAtStartOfDay == null) {
-    stepsAtStartOfDay = storedStart;
-    print('Valeur restaurée depuis cache : $stepsAtStartOfDay');
+@override
+void didChangeAppLifecycleState(AppLifecycleState state) {
+  if (state == AppLifecycleState.resumed) {
+    _readStepsFromCache();
   }
-
-  if (storedDate != todaybd) {
-    currentDayDate = currentDay;
-    todaybd = now.toIso8601String().substring(0, 10);
-    stepsAtStartOfDay = event.steps;
-
-    await prefs.setString('stepDate', todaybd);
-    await prefs.setInt('stepStart', stepsAtStartOfDay!);
-
-    print('Réinitialisation à $stepsAtStartOfDay pour $todaybd');
-  }
-
-  // ✅ Toujours calculer les pas dès le premier événement
-  totalStepsToday = event.steps - (stepsAtStartOfDay ?? event.steps);
-  await prefs.setInt('lastKnownSteps', event.steps);
-
-Text(tr('steps_today', args: [totalStepsToday.toString()]));
-  setState(() {});
-
-  await updateStepsAndCalories();
 }
 
-void initStepCounter() async {
-  final status = await Permission.activityRecognition.request();
-  if (!status.isGranted) {
-    print('Permission non accordée : $status');
-    return;
-  }
+Future<void> _initSteps() async {
+  await Permission.activityRecognition.request();
+  await Permission.notification.request();
 
+  StepCounterService.init();
+  await StepCounterService.start();
+
+  await _readStepsFromCache();
+
+  FlutterForegroundTask.addTaskDataCallback(_onServiceData);
+
+  _stepRefreshTimer = Timer.periodic(
+    const Duration(seconds: 15),
+    (_) => _readStepsFromCache(),
+  );
+}
+
+void _onServiceData(Object data) {
+  if (data is int && data != totalStepsToday && mounted) {
+    setState(() => totalStepsToday = data);
+    updateStepsAndCalories();
+  }
+}
+
+Future<void> _readStepsFromCache() async {
   final prefs = await SharedPreferences.getInstance();
   final storedDate = prefs.getString('stepDate');
-  final storedStart = prefs.getInt('stepStart');
-
-  if (storedDate == todaybd && storedStart != null) {
-    stepsAtStartOfDay = storedStart;
-    final lastKnownSteps = prefs.getInt('lastKnownSteps') ?? storedStart;
-    totalStepsToday = lastKnownSteps - storedStart;
-    print('Restauration immédiate des pas: $totalStepsToday');
-
-    setState(() {}); 
-    // ✅ Mettre Firestore à jour directement même sans nouvel événement
-    await updateStepsAndCalories();
+  if (storedDate != todaybd) return;
+  final steps = prefs.getInt('stepsToday') ?? 0;
+  if (steps != totalStepsToday && steps > 0 && mounted) {
+    setState(() => totalStepsToday = steps);
+    updateStepsAndCalories();
   }
-
-  _stepCountStream = Pedometer.stepCountStream;
-  _stepCountStream!.listen(onStepCount).onError(onStepCountError);
 }
 
 
@@ -143,10 +129,6 @@ int calculateCalories(int steps, int poidsKg, int tailleCm) {
   double calories = met * poidsKg * durationHours;
 
   return calories.round();
-}
-
-void onStepCountError(error) {
-  print('Erreur de podomètre : $error');
 }
 
   Future<void> fetchTodayProgram() async {
@@ -689,6 +671,27 @@ Text(
                                     if ((exercice['restTime'] ?? '')
                                         .isNotEmpty)
                                       Text("Repos : ${exercice['restTime']}"),
+                                    if (exercice['recordedRun'] == true &&
+                                        exercice['route'] is List &&
+                                        (exercice['route'] as List).isNotEmpty)
+                                      Padding(
+                                        padding: const EdgeInsets.only(top: 8),
+                                        child: TextButton.icon(
+                                          icon: const Icon(Icons.map),
+                                          label: Text(tr('run_tracking_show_route')),
+                                          onPressed: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    RunRouteViewerPage(
+                                                  exercise: Map<String, dynamic>.from(exercice),
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ),
                                     const SizedBox(height: 10),
                                     Row(
                                       mainAxisAlignment:

@@ -9,8 +9,16 @@ import 'package:SportTracker/views/home_page.dart';
 import 'package:SportTracker/views/history_page.dart';
 import 'package:SportTracker/views/login_page.dart';
 import 'package:SportTracker/views/add_something_page.dart';
+import 'package:SportTracker/views/my_runs_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter_foreground_task/flutter_foreground_task.dart';
+import 'package:SportTracker/services/step_counter_service.dart';
+
+@pragma('vm:entry-point')
+void startCallback() {
+  FlutterForegroundTask.setTaskHandler(StepCounterTaskHandler());
+}
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,6 +26,7 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   await EasyLocalization.ensureInitialized();
+  FlutterForegroundTask.initCommunicationPort();
 
   runApp(
     EasyLocalization(
@@ -37,12 +46,13 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> {
-  int _selectedIndex = 1;
+  int _selectedIndex = 2;
 
   final List<Widget> _pages = [
     const AddSomethingPage(),
-    const HomePage(),
-    const HistoryPage(),
+    const HistoryPage(),   // index 1 = Data (historique)
+    const HomePage(),     // index 2 = Home au milieu
+    const MyRunsPage(),
     const CaalendarPage(),
   ];
 
@@ -144,12 +154,16 @@ class _MainAppState extends State<MainApp> {
                         label: tr('add'),
                       ),
                       BottomNavigationBarItem(
+                        icon: const Icon(Icons.bar_chart),
+                        label: tr('data'),
+                      ),
+                      BottomNavigationBarItem(
                         icon: const Icon(Icons.home),
                         label: tr('home'),
                       ),
                       BottomNavigationBarItem(
-                        icon: const Icon(Icons.bar_chart),
-                        label: tr('data'),
+                        icon: const Icon(Icons.directions_run),
+                        label: tr('my_runs'),
                       ),
                       BottomNavigationBarItem(
                         icon: const Icon(Icons.date_range),

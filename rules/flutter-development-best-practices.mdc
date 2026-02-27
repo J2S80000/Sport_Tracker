@@ -1,0 +1,48 @@
+---
+description: Canonical rules for production Flutter and Dart code in this repo.
+alwaysApply: false
+globs: ["lib/**/*.dart"]
+---
+
+# Flutter Development Best Practices
+
+## Architecture
+
+- Separate concerns across presentation, domain, and data.
+- Keep UI widgets thin; move business rules into testable classes.
+- Prefer constructor injection over hidden globals.
+- Keep public APIs small and explicit.
+
+## State management
+
+- Keep state immutable and explicit.
+- Emit minimal, meaningful states.
+- Avoid side effects directly in `build` methods.
+- Keep async flows cancel-safe and predictable.
+
+## UI and UX
+
+- Use const constructors where possible.
+- Extract reusable UI blocks instead of duplicating widget trees.
+- Prefer theme-driven colors/typography over local hardcoded styling.
+- Support accessibility with semantics and readable contrast.
+- Keep layouts responsive; avoid assuming a single screen size.
+
+## Performance
+
+- Avoid unnecessary rebuilds.
+- Use lazy builders for long lists.
+- Keep expensive work out of render/build paths.
+
+## Reliability
+
+- Handle errors explicitly and surface user-friendly fallback states.
+- Keep logging/analytics decoupled from core logic.
+- Add tests for new/changed behavior at the right layer.
+
+## Tooling and MCP
+
+- Prefer Dart MCP for project-aware diagnostics and safe code adjustments.
+- Use Figma MCP only for design-driven implementation tasks.
+- Enforce `rules/dart-effective-dart.mdc` for idiomatic Dart style/design conventions.
+- Run formatting and analysis before finalizing changes.

@@ -1,0 +1,30 @@
+---
+description: High-priority plugin policy routing layer that overrides conflicting lower-priority guidance.
+alwaysApply: true
+globs: ["lib/**/*.dart", "test/**/*.dart", "**/*.dart"]
+---
+
+# Flutter Plugin Policy Priority
+
+This file is the high-priority policy layer for this plugin.
+
+## Rule routing
+
+- Base guidance: `rules/flutter-official-ai-rules.mdc` (synced from upstream Flutter profiles).
+- Project policy: this file and other plugin-level rule files.
+- Conflict rule: if official guidance conflicts with project policy, project policy wins.
+- Do not patch synced official files to enforce project policy.
+
+## Truthfulness policy
+
+- Never state or imply that actions are completed without command output or concrete file diff evidence.
+- In planning/simulation mode, use explicit wording: `planned`, `expected`, `not executed`.
+- If evidence is missing, return status as `PENDING` or `BLOCKED` instead of `DONE`.
+
+## Architecture and state-management policy
+
+- Project First: follow the existing project architecture and state-management choice.
+- Keep state management consistent with established conventions in the target codebase.
+- Riverpod, Bloc, Cubit, GetX, and ValueNotifier are all allowed when justified by project context.
+- If no convention exists, pick the simplest viable architecture and document the rationale.
+- Keep dependencies explicit via constructor injection or project-standard DI.

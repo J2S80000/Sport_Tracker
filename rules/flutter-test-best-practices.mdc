@@ -1,0 +1,78 @@
+---
+description: Canonical rules for Dart/Flutter widget, bloc, and cubit tests in this repo.
+alwaysApply: false
+globs: ["test/**/*_test.dart", "**/*_test.dart"]
+---
+
+# Flutter Test Best Practices
+
+## Test Layering Strategy
+
+- Keep a clear test pyramid:
+  - Unit tests: pure logic/state transitions (fast lane).
+  - Widget tests: UI behavior + state reactions (fast/medium lane).
+  - Integration/E2E tests: critical end-to-end journeys only (slow lane).
+- Do not push broad logic coverage into integration tests.
+
+## Test Data and Setup
+
+- Prefer existing builders/factories for domain objects.
+- Do not hand-build complex domain objects when a builder already exists.
+- Reuse shared test setup helpers when available (for example `TestEnv`, `pumpApp`).
+- Use proper teardown (`getIt.reset`, scoped cleanup, or equivalent) to keep tests isolated.
+
+## Widget Test Assertions and Names
+
+- Event test name format: `WHEN user taps <control> THEN <result>`.
+- State test name format: `GIVEN <state> THEN <rendered result>`.
+- Never write `WHEN widget is pumped` or `WHEN page is built`.
+- Prefer behavior assertions over visual attribute checks.
+- For event tests, assert at least one observable outcome after interaction:
+  - callback invoked,
+  - navigation/dialog/snackbar shown,
+  - cubit/repository method called,
+  - state-dependent branch changed in UI.
+- For conditional rendering, assert both:
+  - expected branch is visible,
+  - conflicting branch is not visible (`findsNothing`).
+- Avoid synthetic-only tests that only check size/color/margin/icon unless style itself is the feature requirement.
+- In widget tests, if async logic is involved, use `pumpAndSettle()` or explicit `pump()` steps to assert final user-visible state.
+- Use stable selectors:
+  - `Key`/`ValueKey`,
+  - semantics labels,
+  - stable visible text.
+- Keep widget tests independent: fresh state/setup per test; avoid long chained navigation scenarios.
+- Avoid over-assertion: assert outcomes that matter to users and behavior.
+
+## Bloc/Cubit Tests
+
+- Use `bloc_test` for state flow and `mocktail`/`mockito` for mocks.
+- Keep explicit lifecycle: setUp -> arrange mocks/SUT, tearDown -> close cubit + reset DI.
+- Verify side effects for command-like methods (`verify` on repository/data manager/tracking/logging calls), not only emitted states.
+- Keep `act` deterministic: trigger behavior only.
+- Do not use `Future.delayed(...)` in `act` to "wait" for emissions.
+- Use `wait:` in `blocTest` for debounce/timer-based flows.
+- Use `seed:` only when non-default initial state is required by the test.
+- Use `skip:` only when intentionally ignoring known intermediate states.
+- Test happy path + error path + multi-transition path for stateful logic.
+- Prefer dependency injection and mocks; avoid hidden global coupling in bloc/cubit logic.
+
+## Integration / E2E Tests (Patrol)
+
+- Use Patrol (`patrol_test`) for E2E when Patrol is enabled in the repository.
+- Use E2E tests for critical user journeys only.
+- Use page object pattern for screen interactions (`patrol_test/page_objects/`).
+- Prefer stable selectors and behavior assertions over visual internals.
+- Selector priority: `Key/ValueKey` -> semantics labels -> text (fallback only).
+- Avoid class-based selectors as primary locator strategy.
+- Keep tests deterministic and isolated; avoid cross-test state bleed.
+- Keep suite size small to control CI runtime/flakiness.
+- Keep one main path per test; avoid branching logic in test bodies.
+- Never hardcode test credentials/secrets; use `--dart-define` / `.patrol.env`.
+- For permission dialogs before app pump, use non-awaited request + grant + await sequence.
+
+## Templates
+
+- Widget template: `.cursor-plugin/templates/widget_test_template.dart`
+- Bloc/Cubit template: `.cursor-plugin/templates/bloc_test_template.dart`
+- E2E template: `.cursor-plugin/templates/integration_test_template.dart`
