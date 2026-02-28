@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:pedometer/pedometer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -26,10 +25,25 @@ class StepCounterTaskHandler extends TaskHandler {
     if (storedDate != today) {
       await prefs.setString('stepDate', today);
       await prefs.setInt('stepStart', event.steps);
+      await prefs.setInt('stepOffset', 0);
     }
 
-    final start = prefs.getInt('stepStart') ?? event.steps;
-    final stepsToday = max(0, event.steps - start);
+    int start = prefs.getInt('stepStart') ?? event.steps;
+    int offset = prefs.getInt('stepOffset') ?? 0;
+    final storedStepsToday = prefs.getInt('stepsToday') ?? 0;
+
+    int stepsToday;
+    if (event.steps < start) {
+      // Capteur réinitialisé (ex: redémarrage app) — garder le total et repartir de la nouvelle baseline
+      await prefs.setInt('stepStart', event.steps);
+      await prefs.setInt('stepOffset', storedStepsToday);
+      stepsToday = storedStepsToday;
+    } else {
+      stepsToday = offset + (event.steps - start);
+      if (storedDate == today && storedStepsToday > stepsToday) {
+        stepsToday = storedStepsToday;
+      }
+    }
 
     await prefs.setInt('lastRawSteps', event.steps);
     await prefs.setInt('stepsToday', stepsToday);

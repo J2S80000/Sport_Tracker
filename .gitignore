@@ -15,6 +15,9 @@ migrate_working_dir/
 # confidential files
 generate-program/wrangler.jsonc
 
+# Watch: doc locale exclue des push
+lib/watch/README.md
+
 # IntelliJ related
 *.iml
 *.ipr

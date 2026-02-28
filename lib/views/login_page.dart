@@ -75,6 +75,15 @@ class _LoginPageState extends State<LoginPage> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
+            const SizedBox(height: 24),
+            Image.asset(
+              'assets/icon/icon.png',
+              width: 80,
+              height: 80,
+              fit: BoxFit.contain,
+              errorBuilder: (_, __, ___) => const Icon(Icons.fitness_center, size: 64),
+            ),
+            const SizedBox(height: 24),
             TextField(
               controller: emailController,
               decoration: InputDecoration(labelText: tr('email')),

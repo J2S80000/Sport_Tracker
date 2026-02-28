@@ -33,6 +33,17 @@ android {
         versionName = flutter.versionName
     }
 
+    flavorDimensions += "device"
+    productFlavors {
+        create("phone") {
+            dimension = "device"
+        }
+        create("wear") {
+            dimension = "device"
+            // Même applicationId que le téléphone pour réutiliser google-services.json (Firebase)
+        }
+    }
+
     buildTypes {
         release {
             signingConfig = signingConfigs.getByName("debug")
