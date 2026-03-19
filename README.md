@@ -7,6 +7,8 @@ SportTracker was built with a clear goal: to provide a powerful, open-source alt
 This project is fully open-source and licensed under Apache 2.0.
 
 ✨ Key Features
+<img width="1216" height="2469" alt="image" src="https://github.com/user-attachments/assets/d096e559-538b-4368-8866-d9d24f453179" />
+
 🏃 Live Running Tracking: Hit the road and track your runs in real-time. The app records your GPS route, calculates your average speed, and tracks your distance.
 
 🤖 AI-Powered Workout Generation: Stuck in a rut? Let the app generate custom 1-week or 2-week training programs for you using advanced AI.
@@ -16,6 +18,8 @@ This project is fully open-source and licensed under Apache 2.0.
 📊 Data Visualization: True to my Data Analysis background, you can visualize your evolution and performance trends for any specific exercise.
 
 👣 Built-in Pedometer: Seamlessly count your daily steps.
+<img width="1220" height="2469" alt="image" src="https://github.com/user-attachments/assets/8edc5d5c-f83d-432c-b9d6-a438f903052c" />
+
 
 🔥 Calorie Calculator: Accurately estimate your burned calories based on your body weight and activity level.
 
