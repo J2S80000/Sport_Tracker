@@ -6,6 +6,7 @@
   **A powerful, open-source alternative to mainstream fitness tracking apps.**
 
   [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+  [![Download](https://img.shields.io/badge/Download-Latest%20Release-green.svg)](https://github.com/J2S80000/Sport_Tracker/releases/tag/v1.0.8)
 </div>
 
 ---
